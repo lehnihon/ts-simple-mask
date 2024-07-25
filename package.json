@@ -1,9 +1,22 @@
 {
   "name": "ts-simple-mask",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "files": [
     "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lehnihon/ts-simple-mask.git"
+  },
+  "keywords": [
+    "mask",
+    "react-mask",
+    "react-native-mask",
+    "ts-mask",
+    "js-mask",
+    "typescript",
+    "javascript"
   ],
   "main": "./dist/ts-simple-mask.umd.cjs",
   "module": "./dist/ts-simple-mask.js",
