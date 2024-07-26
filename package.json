@@ -9,12 +9,14 @@
     "type": "git",
     "url": "https://github.com/lehnihon/ts-simple-mask.git"
   },
+  "author": "lk-dev",
+  "license": "MIT",
   "keywords": [
     "mask",
     "react-mask",
     "react-native-mask",
-    "ts-mask",
-    "js-mask",
+    "typescript-mask",
+    "javascript-mask",
     "typescript",
     "javascript"
   ],
