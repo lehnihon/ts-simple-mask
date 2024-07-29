@@ -86,7 +86,9 @@ export const Input = () => {
 
 ### React Native
 
-- Run `npm start` to serve your presentation locally
+```tsx
+
+```
 
 ![divider](./divider.png)
 
