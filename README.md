@@ -5,7 +5,7 @@
 <h1 align="center">Typescript Simple Mask</h1>
 
 <p align="center">
-  <b>A simple and versatile way to make text masks</b></br>
+  <b>A simple and versatile way to make text input masks</b></br>
 </br>
   <sub>Made with ❤️ by <a href="https://github.com/lehnihon">lehnihon</a> & <a href="https://github.com/lehnihon/ts-simple-mask/graphs/contributors">contributors</a></sub>
 </p>
@@ -14,9 +14,9 @@
 
 <div align="center">
 
-[![npm downloads](https://img.shields.io/npm/dm/react-hook-mask.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-mask)
-[![npm](https://img.shields.io/npm/dt/react-hook-mask.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-mask)
-[![npm](https://img.shields.io/npm/l/react-hook-mask?style=for-the-badge)](https://github.com/lucasbasquerotto/react-masked-input/blob/master/LICENCE)
+[![npm downloads](https://img.shields.io/npm/dm/ts-simple-mask.svg?style=for-the-badge)](https://www.npmjs.com/package/ts-simple-mask)
+[![npm](https://img.shields.io/npm/dt/ts-simple-mask.svg?style=for-the-badge)](https://www.npmjs.com/package/ts-simple-mask)
+[![npm](https://img.shields.io/npm/l/ts-simple-mask?style=for-the-badge)](https://github.com/lehnihon/ts-simple-mask/blob/main/LICENSE)
 
 </div>
 
