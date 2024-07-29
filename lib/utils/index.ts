@@ -1,15 +1,16 @@
+import { DEFAULT_MONEY_RULES } from "../constants";
 import { MaskType } from "../enums";
 import { DEFAULT_RULES } from "../maps";
 import { MaskMoneyRules } from "../types";
 
 export const mask = (
   value: string,
-  mask: string,
+  maskRule: string,
   rules?: Map<string, RegExp>
 ) => {
   let i = 0;
 
-  const masked = [...mask].reduce((acc, char) => {
+  const masked = [...maskRule].reduce((acc, char) => {
     const currentValue = unmask(value)[i];
     if (!currentValue) return acc;
     const regex = (rules ?? DEFAULT_RULES).get(char);
@@ -46,20 +47,49 @@ export const getMask = (value: string, type: MaskType) => {
 };
 
 export const maskMoney = (value: string, rules?: MaskMoneyRules) => {
-  const inputValue = Number(value);
-  const initialValue = inputValue % 1 === 0 ? inputValue / 100 : inputValue;
-  const masked = initialValue
-    .toFixed(2)
-    .replace(".", ",")
-    .replace(/(\d)(?=(\d{3})+,)/g, "$1.");
+  const MONEY_RULES = validateMoneyRules(rules);
+
+  const masked = clearMoneyValue(value, MONEY_RULES.precision)
+    .toFixed(MONEY_RULES.precision)
+    .replace(".", MONEY_RULES.precision === 0 ? "" : MONEY_RULES.decimal)
+    .replace(
+      new RegExp(
+        MONEY_RULES.precision === 0
+          ? "(\\d{1,3})(?=(\\d{3})+(?!\\d))"
+          : `(\\d)(?=(\\d{3})+,)`,
+        "g"
+      ),
+      `$1${MONEY_RULES.thousands}`
+    );
   return {
     masked,
-    unmasked: 0,
+    unmasked: unmaskMoney(masked, MONEY_RULES),
   };
 };
 
-export const unmaskMoney = (value: string) => {
-  const decimalPart = value.split(/\D/).pop();
-  const integerPart = value.replace(/[^0-9]/g, "");
-  return parseFloat(`${integerPart}.${decimalPart}`);
+export const unmaskMoney = (value: string, rules?: MaskMoneyRules) => {
+  const MONEY_RULES = validateMoneyRules(rules);
+  if (!value) return "0";
+  if (MONEY_RULES.precision === 0) return `${value.replace(/[^0-9]/g, "")}`;
+  const { decimalPart, integerPart } = splitIntegerDecimal(value);
+  return `${integerPart}.${decimalPart}`;
+};
+
+const splitIntegerDecimal = (value: string) => {
+  const numberParts = value.split(/\D/);
+  const decimalPart = numberParts.pop();
+  const integerPart = numberParts.join("");
+  return { decimalPart, integerPart };
+};
+
+const clearMoneyValue = (value: string, precision: number) =>
+  Number(unmask(value)) / Number(`1${"".padEnd(precision, "0")}`);
+
+const validateMoneyRules = (rules?: MaskMoneyRules) => {
+  if (!rules) return DEFAULT_MONEY_RULES;
+  return { 
+    ...rules,
+    precision: !rules.precision || rules.precision < 0 ? 0 : rules.precision , 
+    decimal: !rules.decimal ? "." : rules.decimal 
+  };
 };
