@@ -1,16 +1,15 @@
-import React, { ReactNode, useState } from "react";
-import { maskMoney } from "ts-simple-mask";
+import React from "react";
+import { mask } from "ts-simple-mask";
 
-export const Input = (): ReactNode => {
-  const [value, setValue] = useState("");
-  const simpleMask = maskMoney(value);
+export const Input = ()=> {
+  const [value, setValue] = React.useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const simpleMask = maskMoney(e.target.value);
-    setValue(simpleMask.unmasked);
+    const simpleMask = mask(e.target.value,'00/00/0000');
+    setValue(simpleMask.masked);
   };
 
   return (
-    <input type="text" value={simpleMask.masked} onChange={handleChange} />
+    <input type="text" value={value} onChange={handleChange} />
   );
 };
