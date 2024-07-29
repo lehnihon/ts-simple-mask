@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" alt="tssimplemask" width="400" />
+  <img src="./logo.png" alt="tssimplemask" width="300" />
 </p>
 
 <h1 align="center">Typescript Simple Mask</h1>
