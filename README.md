@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./w3tec-logo.png" alt="w3tec" width="400" />
+  <img src="./logo.png" alt="tssimplemask" width="400" />
 </p>
 
 <h1 align="center">Typescript Simple Mask</h1>
