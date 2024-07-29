@@ -51,12 +51,6 @@ Install [Node.js and NPM](https://nodejs.org/en/download/)
 npm install ts-simple-mask
 ```
 
-### Mask
-
-```bash
-npm start
-```
-
 ![divider](./divider.png)
 
 ## ❯ Examples
