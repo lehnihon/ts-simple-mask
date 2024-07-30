@@ -31,7 +31,7 @@ Need for a solution that works on different stacks.
 
 ### Features
 
-- Mask and unmask input texts and apply custom rules.
+- Mask, unmask input texts, apply custom rules.
 - Money functions.
 
 ![divider](./divider.png)
@@ -156,7 +156,7 @@ To customize the mask, you need to send the rules via optional parameter.
 Send the same rules to remove the mask.
 
 ```tsx
-export const CUSTOMIZED_RULES = new Map([
+const CUSTOMIZED_RULES = new Map([
   ["#", /[A-Za-z]/],
   ["9", /\d/],
 ]);
