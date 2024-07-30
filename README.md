@@ -199,7 +199,20 @@ export const Input = () => {
 ### React Native
 
 ```tsx
+import React from "react";
+import { TextInput } from "react-native";
+import { getMask, mask, MaskType } from "ts-simple-mask";
 
+export const TextForm = () => {
+  const [value, setValue] = React.useState("");
+
+  const handleChange = (text: string) => {
+    const tsMask = mask(text, getMask(text, MaskType.DOCUMENT_BR));
+    setValue(tsMask.masked);
+  };
+
+  return <TextInput onChangeText={handleChange} value={value} />;
+};
 ```
 
 ![divider](./divider.png)
