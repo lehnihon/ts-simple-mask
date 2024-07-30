@@ -154,7 +154,7 @@ export const CUSTOMIZED_RULES = new Map([
   ["9", /\d/],
 ]);
 
-const tsMask = mask(e.target.value, "99/99/9999", CUSTOMIZED_RULES);
+const tsMask = mask("01011987", "99/99/9999", CUSTOMIZED_RULES);
 ```
 
 ```tsx
@@ -164,7 +164,7 @@ const MONEY_RULES = {
   precision: 2,
 };
 
-const tsMask = maskMoney("1.234,56", MONEY_RULES);
+const tsMask = maskMoney("123456", MONEY_RULES);
 ```
 
 ![divider](./divider.png)
