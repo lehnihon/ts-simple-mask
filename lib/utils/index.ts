@@ -9,9 +9,9 @@ export const mask = (
   rules?: Map<string, RegExp>
 ) => {
   let i = 0;
-
+  const unmasked = unmask(value, maskRule, rules);
   const masked = [...maskRule].reduce((acc, char) => {
-    const currentValue = unmask(value)[i];
+    const currentValue = unmasked[i];
     if (!currentValue) return acc;
     const regex = (rules ?? DEFAULT_RULES).get(char);
     return regex
@@ -23,20 +23,37 @@ export const mask = (
 
   return {
     masked,
-    unmasked: unmask(masked),
+    unmasked: unmask(masked, maskRule, rules),
   };
 };
 
-export const unmask = (value: string) => value.replace(/[^a-zA-Z0-9]/g, "");
+export const unmask = (
+  value: string,
+  maskRule: string,
+  rules?: Map<string, RegExp>
+) => {
+  return value.replace(
+    new RegExp(
+      `${[...maskRule]
+        .filter((char) => !(rules ?? DEFAULT_RULES).get(char))
+        .map((char) => scapeRegex(char))
+        .join("|")}`,
+      "g"
+    ),
+    ""
+  );
+};
 
 export const getMask = (value: string, type: MaskType) => {
   switch (type) {
     case MaskType.DOCUMENT_BR:
-      return unmask(value).length <= 11
+      return value.replace(/[^0-9]/g, "").length <= 11
         ? "000.000.000-00"
         : "00.000.000/0000-00";
     case MaskType.PHONE_BR:
-      return unmask(value).length <= 10 ? "(00)0000-0000" : "(00)00000-0000";
+      return value.replace(/[^0-9]/g, "").length <= 10
+        ? "(00)0000-0000"
+        : "(00)00000-0000";
     case MaskType.LICENSE_PLATE_BR:
       return "SSS-0A00";
     case MaskType.ZIPCODE_BR:
@@ -56,7 +73,7 @@ export const maskMoney = (value: string, rules?: MaskMoneyRules) => {
       new RegExp(
         MONEY_RULES.precision === 0
           ? "(\\d{1,3})(?=(\\d{3})+(?!\\d))"
-          : `(\\d)(?=(\\d{3})+,)`,
+          : `(\\d)(?=(\\d{3})+${scapeRegex(MONEY_RULES.decimal)})`,
         "g"
       ),
       `$1${MONEY_RULES.thousands}`
@@ -83,7 +100,8 @@ const splitIntegerDecimal = (value: string) => {
 };
 
 const clearMoneyValue = (value: string, precision: number) =>
-  Number(unmask(value)) / Number(`1${"".padEnd(precision, "0")}`);
+  Number(value.replace(/[^0-9]/g, "")) /
+  Number(`1${"".padEnd(precision, "0")}`);
 
 const validateMoneyRules = (rules?: MaskMoneyRules) => {
   if (!rules) return DEFAULT_MONEY_RULES;
@@ -92,4 +110,8 @@ const validateMoneyRules = (rules?: MaskMoneyRules) => {
     precision: !rules.precision || rules.precision < 0 ? 0 : rules.precision,
     decimal: !rules.decimal ? "." : rules.decimal,
   };
+};
+
+const scapeRegex = (value: string) => {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 };

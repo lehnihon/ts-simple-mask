@@ -39,7 +39,7 @@ Need for a solution that works on different stacks.
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-- [TS Masks API](#ts-masks-api)
+- [TS Mask API](#ts-mask-api)
 - [Customize](#customize)
 - [Examples](#examples)
 - [License](#license)
@@ -74,7 +74,7 @@ const unmasked = tsMask.unmasked;
 
 ![divider](./divider.png)
 
-## TS Masks API
+## TS Mask API
 
 - Mask text
 
@@ -90,12 +90,12 @@ const unmasked = tsMask.unmasked;
 
 - Unmask text
 
-`unmask(value: string)`
+`unmask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
 
 ```tsx
 import { unmask } from "ts-simple-mask";
 
-const unmasked = unmask("ABC-1A23");
+const unmasked = unmask("ABC-1A23", "SSS-0A00");
 ```
 
 - Get default masks
@@ -151,7 +151,8 @@ const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
 
 ## Customize
 
-To customize the text mask, you need to send the rules via optional parameter
+To customize the mask, you need to send the rules via optional parameter.
+Send the same rules to remove the mask.
 
 ```tsx
 export const CUSTOMIZED_RULES = new Map([
@@ -160,6 +161,7 @@ export const CUSTOMIZED_RULES = new Map([
 ]);
 
 const tsMask = mask("01011987", "99/99/9999", CUSTOMIZED_RULES);
+const unmasked = unmask("01/01/1987", "99/99/9999", CUSTOMIZED_RULES);
 ```
 
 ```tsx
@@ -169,7 +171,8 @@ const CUSTOMIZED_MONEY_RULES = {
   precision: 3,
 };
 
-const tsMask = maskMoney("123456", MONEY_RULES);
+const tsMask = maskMoney("123456789", MONEY_RULES);
+const unmasked = unmaskMoney("123 456.789", MONEY_RULES);
 ```
 
 ![divider](./divider.png)
@@ -184,7 +187,7 @@ Practical use examples
 import React from "react";
 import { maskMoney } from "ts-simple-mask";
 
-export const Input = () => {
+export const TextForm = () => {
   const [value, setValue] = React.useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
