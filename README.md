@@ -19,8 +19,8 @@
 
 [![install size](https://img.shields.io/badge/dynamic/json?url=https://packagephobia.com/v2/api.json?p=ts-simple-mask&query=$.install.pretty&label=install%20size&style=flat-square)](https://packagephobia.now.sh/result?p=ts-simple-mask)
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/ts-simple-mask?style=flat-square)](https://bundlephobia.com/package/ts-simple-mask@latest)
-[![npm downloads](https://img.shields.io/npm/dm/ts-simple-mask.svg?style=for-the-badge)](https://www.npmjs.com/package/ts-simple-mask)
-[![npm](https://img.shields.io/npm/l/ts-simple-mask?style=for-the-badge)](https://github.com/lehnihon/ts-simple-mask/blob/main/LICENSE)
+[![npm downloads](https://img.shields.io/npm/dm/ts-simple-mask.svg?style=flat-square)](https://www.npmjs.com/package/ts-simple-mask)
+[![npm](https://img.shields.io/npm/l/ts-simple-mask?style=flat-square)](https://github.com/lehnihon/ts-simple-mask/blob/main/LICENSE)
 
 </div>
 
@@ -39,11 +39,11 @@ Need for a solution that works on different stacks.
 
 ## Table of Contents
 
-- [Getting Started](#-getting-started)
-- [TS Masks API](#-ts-masks-api)
-- [Customize](#-customize)
-- [Examples](#-examples)
-- [License](#-license)
+- [Getting Started](#getting-started)
+- [TS Masks API](#ts-masks-api)
+- [Customize](#customize)
+- [Examples](#examples)
+- [License](#license)
 
 ![divider](./divider.png)
 
@@ -172,7 +172,7 @@ const tsMask = maskMoney("1.234,56", MONEY_RULES);
 
 ![divider](./divider.png)
 
-## ❯ Examples
+## Examples
 
 Practical use examples
 
@@ -205,6 +205,6 @@ export const Input = () => {
 
 ![divider](./divider.png)
 
-## ❯ License
+## License
 
 [MIT](/LICENSE)
