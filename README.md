@@ -152,6 +152,7 @@ const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
 ## Customize
 
 To customize the mask, you need to send the rules via optional parameter.
+
 Send the same rules to remove the mask.
 
 ```tsx
