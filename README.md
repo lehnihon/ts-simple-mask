@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" alt="tssimplemask" width="200" />
+  <img src="./logo.png" alt="tssimplemask" width="150" />
 </p>
 
 <h1 align="center">Typescript Simple Mask</h1>
@@ -58,11 +58,11 @@ npm install ts-simple-mask
 
 There are some ready-to-use standard rules:
 
-`DEFAULT_RULES = new Map([
+`[
   ["S", /[A-Za-z]/],
   ["0", /\d/],
   ["A", /[a-zA-Z0-9]/],
-])`
+]`
 
 ```tsx
 import { mask } from "ts-simple-mask";
@@ -77,7 +77,8 @@ const unmasked = tsMask.unmasked;
 ## TS Masks API
 
 - Mask text
-  `mask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
+
+`mask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
 
 ```tsx
 import { mask } from "ts-simple-mask";
@@ -88,7 +89,8 @@ const unmasked = tsMask.unmasked;
 ```
 
 - Unmask text
-  `unmask(value: string)`
+
+`unmask(value: string)`
 
 ```tsx
 import { unmask } from "ts-simple-mask";
@@ -97,7 +99,8 @@ const unmasked = unmask("ABC-1A23");
 ```
 
 - Get default masks
-  `getMask(value: string, type: MaskType)`
+
+`getMask(value: string, type: MaskType)`
 
 ```tsx
 enum MaskType {
@@ -111,7 +114,8 @@ mask("46963603006", getMask(value, MaskType.DOCUMENT_BR));
 ```
 
 - Mask money
-  `maskMoney(value: string, rules?: MaskMoneyRules)`
+
+`maskMoney(value: string, rules?: MaskMoneyRules)`
 
 ```tsx
 import { maskMoney } from "ts-simple-mask";
@@ -128,7 +132,8 @@ const unmasked = tsMask.unmasked;
 ```
 
 - Unmask money
-  `unmaskMoney(value: string, rules?: MaskMoneyRules)`
+
+`unmaskMoney(value: string, rules?: MaskMoneyRules)`
 
 ```tsx
 import { maskMoney } from "ts-simple-mask";
@@ -158,10 +163,10 @@ const tsMask = mask("01011987", "99/99/9999", CUSTOMIZED_RULES);
 ```
 
 ```tsx
-const MONEY_RULES = {
-  thousands: ".",
-  decimal: ",",
-  precision: 2,
+const CUSTOMIZED_MONEY_RULES = {
+  thousands: " ",
+  decimal: ".",
+  precision: 3,
 };
 
 const tsMask = maskMoney("123456", MONEY_RULES);
@@ -181,16 +186,13 @@ import { maskMoney } from "ts-simple-mask";
 
 export const Input = () => {
   const [value, setValue] = React.useState("");
-  const simpleMask = maskMoney(value);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const simpleMask = maskMoney(e.target.value);
-    setValue(simpleMask.unmasked);
+    const tsMask = maskMoney(e.target.value);
+    setValue(tsMask.masked);
   };
 
-  return (
-    <input type="text" value={simpleMask.masked} onChange={handleChange} />
-  );
+  return <input type="text" value={value} onChange={handleChange} />;
 };
 ```
 
