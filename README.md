@@ -7,7 +7,6 @@
 <p align="center">
   <b>A simple and versatile way to make text input masks</b>
 </p>
-
 </br>
 <p align="center">
   <sub>Made with ❤️ by <a href="https://github.com/lehnihon">lehnihon</a> & <a href="https://github.com/lehnihon/ts-simple-mask/graphs/contributors">contributors</a></sub>
@@ -59,7 +58,7 @@ npm install ts-simple-mask
 
 There are some ready-to-use standard rules:
 
-`export const DEFAULT_RULES = new Map([
+`DEFAULT_RULES = new Map([
   ["S", /[A-Za-z]/],
   ["0", /\d/],
   ["A", /[a-zA-Z0-9]/],
@@ -129,7 +128,7 @@ const unmasked = tsMask.unmasked;
 ```
 
 - Unmask money
-  `maskMoney(value: string, rules?: MaskMoneyRules)`
+  `unmaskMoney(value: string, rules?: MaskMoneyRules)`
 
 ```tsx
 import { maskMoney } from "ts-simple-mask";
@@ -147,7 +146,7 @@ const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
 
 ## Customize
 
-To customize the text mask, you need to send the rules via the third parameter`
+To customize the text mask, you need to send the rules via the third parameter
 
 ```tsx
 export const CUSTOMIZED_RULES = new Map([
@@ -157,8 +156,6 @@ export const CUSTOMIZED_RULES = new Map([
 
 const tsMask = mask(e.target.value, "99/99/9999", CUSTOMIZED_RULES);
 ```
-
-To customize the money mask, you need to send the rules via the second parameter`
 
 ```tsx
 const MONEY_RULES = {
