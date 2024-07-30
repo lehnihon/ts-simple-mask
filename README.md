@@ -5,8 +5,11 @@
 <h1 align="center">Typescript Simple Mask</h1>
 
 <p align="center">
-  <b>A simple and versatile way to make text input masks</b></br>
+  <b>A simple and versatile way to make text input masks</b>
+</p>
 </br>
+</br>
+<p align="center">
   <sub>Made with ❤️ by <a href="https://github.com/lehnihon">lehnihon</a> & <a href="https://github.com/lehnihon/ts-simple-mask/graphs/contributors">contributors</a></sub>
 </p>
 
@@ -14,37 +17,37 @@
 
 <div align="center">
 
+[![install size](https://img.shields.io/badge/dynamic/json?url=https://packagephobia.com/v2/api.json?p=ts-simple-mask&query=$.install.pretty&label=install%20size&style=flat-square)](https://packagephobia.now.sh/result?p=ts-simple-mask)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/ts-simple-mask?style=flat-square)](https://bundlephobia.com/package/ts-simple-mask@latest)
 [![npm downloads](https://img.shields.io/npm/dm/ts-simple-mask.svg?style=for-the-badge)](https://www.npmjs.com/package/ts-simple-mask)
-[![npm](https://img.shields.io/npm/dt/ts-simple-mask.svg?style=for-the-badge)](https://www.npmjs.com/package/ts-simple-mask)
 [![npm](https://img.shields.io/npm/l/ts-simple-mask?style=for-the-badge)](https://github.com/lehnihon/ts-simple-mask/blob/main/LICENSE)
 
 </div>
 
 <br />
 
-## ❯ Why
+## Why
 
 Need for a solution that works on different stacks.
 
 ### Features
 
-- **Mask** mask and unmask input texts and apply custom rules.
-- **MaskMoney** money functions.
+- Mask and unmask input texts and apply custom rules.
+- Money functions.
 
 ![divider](./divider.png)
 
-## ❯ Table of Contents
+## Table of Contents
 
 - [Getting Started](#-getting-started)
-- [Masks](#-masks)
-- [Money](#-money)
+- [TS Masks API](#-ts-masks-api)
 - [Customize](#-customize)
 - [Examples](#-examples)
 - [License](#-license)
 
 ![divider](./divider.png)
 
-## ❯ Getting Started
+## Getting Started
 
 ### Install
 
@@ -63,58 +66,55 @@ There are some ready-to-use standard rules:
 ])`
 
 ```tsx
-import React from "react";
 import { mask } from "ts-simple-mask";
 
-export const Input = () => {
-  const [value, setValue] = React.useState("");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const simpleMask = mask(e.target.value, "00/00/0000");
-    setValue(simpleMask.masked);
-  };
-
-  return <input type="text" value={value} onChange={handleChange} />;
-};
+const tsMask = mask("01011987", "00/00/0000");
+const masked = tsMask.masked;
+const unmasked = tsMask.unmasked;
 ```
 
 ![divider](./divider.png)
 
-## ❯ Masks
+## TS Masks API
 
-Default masks
+- Mask text
+  `mask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
 
 ```tsx
-export const getMask = (value: string, type: MaskType) => {
-  switch (type) {
-    case MaskType.DOCUMENT_BR:
-      return unmask(value).length <= 11
-        ? "000.000.000-00"
-        : "00.000.000/0000-00";
-    case MaskType.PHONE_BR:
-      return unmask(value).length <= 10 ? "(00)0000-0000" : "(00)00000-0000";
-    case MaskType.LICENSE_PLATE_BR:
-      return "SSS-0A00";
-    case MaskType.ZIPCODE_BR:
-      return "00000-000";
-    default:
-      return "";
-  }
-};
+import { mask } from "ts-simple-mask";
 
-mask(value, getMask(value, MaskType.DOCUMENT_BR));
+const tsMask = mask("ABC-1A23", "SSS-0A00");
+const masked = tsMask.masked;
+const unmasked = tsMask.unmasked;
 ```
 
-![divider](./divider.png)
-
-## ❯ Money
-
-To format it as currency there is another function `maskMoney(value: string, rules?: MaskMoneyRules)`
-
-`export interface MaskMoneyRules { thousands: string; decimal: string;precision: number; }`
+- Unmask text
+  `unmask(value: string)`
 
 ```tsx
-import React from "react";
+import { unmask } from "ts-simple-mask";
+
+const unmasked = unmask("ABC-1A23");
+```
+
+- Get default masks
+  `getMask(value: string, type: MaskType)`
+
+```tsx
+enum MaskType {
+  DOCUMENT_BR,
+  PHONE_BR,
+  LICENSE_PLATE_BR,
+  ZIPCODE_BR,
+}
+
+mask("46963603006", getMask(value, MaskType.DOCUMENT_BR));
+```
+
+- Mask money
+  `maskMoney(value: string, rules?: MaskMoneyRules)`
+
+```tsx
 import { maskMoney } from "ts-simple-mask";
 
 const MONEY_RULES = {
@@ -123,27 +123,31 @@ const MONEY_RULES = {
   precision: 2,
 };
 
-export const Input = () => {
-  const [value, setValue] = React.useState("");
-  const simpleMask = maskMoney(value, MONEY_RULES);
+const tsMask = maskMoney("123456", MONEY_RULES);
+const masked = tsMask.masked;
+const unmasked = tsMask.unmasked;
+```
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const simpleMask = maskMoney(e.target.value, MONEY_RULES);
-    setValue(simpleMask.unmasked);
-  };
+- Unmask money
+  `maskMoney(value: string, rules?: MaskMoneyRules)`
 
-  return (
-    <input type="text" value={simpleMask.masked} onChange={handleChange} />
-  );
+```tsx
+import { maskMoney } from "ts-simple-mask";
+
+const MONEY_RULES = {
+  thousands: ".",
+  decimal: ",",
+  precision: 2,
 };
+
+const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
 ```
 
 ![divider](./divider.png)
 
-## ❯ Customize
+## Customize
 
-To customize the text mask, you need to send the rules via the third parameter `mask(value: string, maskRule: string, rules?: Map<string, RegExp
-)`
+To customize the text mask, you need to send the rules via the third parameter`
 
 ```tsx
 export const CUSTOMIZED_RULES = new Map([
@@ -151,7 +155,19 @@ export const CUSTOMIZED_RULES = new Map([
   ["9", /\d/],
 ]);
 
-const simpleMask = mask(e.target.value, "99/99/9999", CUSTOMIZED_RULES);
+const tsMask = mask(e.target.value, "99/99/9999", CUSTOMIZED_RULES);
+```
+
+To customize the money mask, you need to send the rules via the second parameter`
+
+```tsx
+const MONEY_RULES = {
+  thousands: ".",
+  decimal: ",",
+  precision: 2,
+};
+
+const tsMask = maskMoney("1.234,56", MONEY_RULES);
 ```
 
 ![divider](./divider.png)
