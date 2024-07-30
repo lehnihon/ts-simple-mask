@@ -172,8 +172,8 @@ const CUSTOMIZED_MONEY_RULES = {
   precision: 3,
 };
 
-const tsMask = maskMoney("123456789", MONEY_RULES);
-const unmasked = unmaskMoney("123 456.789", MONEY_RULES);
+const tsMask = maskMoney("123456789", CUSTOMIZED_MONEY_RULES);
+const unmasked = unmaskMoney("123 456.789", CUSTOMIZED_MONEY_RULES);
 ```
 
 ![divider](./divider.png)
