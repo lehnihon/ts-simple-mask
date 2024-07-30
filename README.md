@@ -215,6 +215,23 @@ export const TextForm = () => {
 };
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { mask } from "ts-simple-mask";
+
+const onInput = (event) => {
+  const tsMask = mask(event.target.value.toUpperCase(), "SSS-0A00");
+  event.target.value = tsMask.masked;
+};
+</script>
+
+<template>
+  <input @input="onInput" />
+</template>
+```
+
 ![divider](./divider.png)
 
 ## License
