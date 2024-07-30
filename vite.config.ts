@@ -7,7 +7,14 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths(), dts()],
+  plugins: [
+    react(),
+    tsconfigPaths(),
+    dts({
+      include: ["./lib"],
+      tsconfigPath: "./tsconfig.app.json",
+    }),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, "lib/main.ts"),
