@@ -7,14 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    tsconfigPaths(),
-    dts({
-      include: ["./lib"],
-      tsconfigPath: "./tsconfig.app.json",
-    }),
-  ],
+  plugins: [react(), tsconfigPaths(), dts({ rollupTypes: true })],
   build: {
     lib: {
       entry: resolve(__dirname, "lib/main.ts"),
