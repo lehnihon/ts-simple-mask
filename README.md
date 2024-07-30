@@ -151,7 +151,7 @@ const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
 
 ## Customize
 
-To customize the text mask, you need to send the rules via the third parameter
+To customize the text mask, you need to send the rules via optional parameter
 
 ```tsx
 export const CUSTOMIZED_RULES = new Map([

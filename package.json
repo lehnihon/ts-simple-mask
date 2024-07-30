@@ -1,6 +1,6 @@
 {
   "name": "ts-simple-mask",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "module",
   "files": [
     "dist"
@@ -58,9 +58,5 @@
     "vite-plugin-dts": "4.0.0-beta.1",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.0.4"
-  },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
   }
 }
