@@ -3,11 +3,11 @@
 </p>
 
 <h1 align="center">Typescript Simple Mask</h1>
-
+</br>
 <p align="center">
   <b>A simple and versatile way to make text input masks</b>
 </p>
-</br>
+
 </br>
 <p align="center">
   <sub>Made with ❤️ by <a href="https://github.com/lehnihon">lehnihon</a> & <a href="https://github.com/lehnihon/ts-simple-mask/graphs/contributors">contributors</a></sub>
