@@ -1,10 +1,19 @@
 {
   "name": "ts-simple-mask",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "type": "module",
   "files": [
     "dist"
   ],
+  "types": "./dist/ts-simple-mask.d.ts",
+  "main": "./dist/ts-simple-mask.umd.cjs",
+  "module": "./dist/ts-simple-mask.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ts-simple-mask.js",
+      "require": "./dist/ts-simple-mask.umd.cjs"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/lehnihon/ts-simple-mask.git"
@@ -20,14 +29,6 @@
     "typescript",
     "javascript"
   ],
-  "main": "./dist/ts-simple-mask.umd.cjs",
-  "module": "./dist/ts-simple-mask.js",
-  "exports": {
-    ".": {
-      "import": "./dist/ts-simple-mask.js",
-      "require": "./dist/ts-simple-mask.umd.cjs"
-    }
-  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
