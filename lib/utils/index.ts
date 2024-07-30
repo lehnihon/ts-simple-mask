@@ -87,9 +87,9 @@ const clearMoneyValue = (value: string, precision: number) =>
 
 const validateMoneyRules = (rules?: MaskMoneyRules) => {
   if (!rules) return DEFAULT_MONEY_RULES;
-  return { 
+  return {
     ...rules,
-    precision: !rules.precision || rules.precision < 0 ? 0 : rules.precision , 
-    decimal: !rules.decimal ? "." : rules.decimal 
+    precision: !rules.precision || rules.precision < 0 ? 0 : rules.precision,
+    decimal: !rules.decimal ? "." : rules.decimal,
   };
 };

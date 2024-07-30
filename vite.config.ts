@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
-    dts({ rollupTypes: true, tsconfigPath: "./tsconfig.app.json" }),
+    dts({ tsconfigPath: "./tsconfig.build.json" }),
   ],
   build: {
     lib: {
