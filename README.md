@@ -58,13 +58,15 @@ npm install ts-simple-mask
 
 There are some ready-to-use standard rules:
 
-`[
+```ts
+[
   ["S", /[A-Za-z]/],
   ["0", /\d/],
   ["A", /[a-zA-Z0-9]/],
-]`
+];
+```
 
-```tsx
+```ts
 import { mask } from "ts-simple-mask";
 
 const tsMask = mask("01011987", "00/00/0000");
@@ -80,7 +82,7 @@ const unmasked = tsMask.unmasked;
 
 `mask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
 
-```tsx
+```ts
 import { mask } from "ts-simple-mask";
 
 const tsMask = mask("ABC-1A23", "SSS-0A00");
@@ -92,7 +94,7 @@ const unmasked = tsMask.unmasked;
 
 `unmask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
 
-```tsx
+```ts
 import { unmask } from "ts-simple-mask";
 
 const unmasked = unmask("ABC-1A23", "SSS-0A00");
@@ -102,7 +104,7 @@ const unmasked = unmask("ABC-1A23", "SSS-0A00");
 
 `getMask(value: string, type: MaskType)`
 
-```tsx
+```ts
 enum MaskType {
   DOCUMENT_BR,
   PHONE_BR,
@@ -117,7 +119,7 @@ mask("46963603006", getMask(value, MaskType.DOCUMENT_BR));
 
 `maskMoney(value: string, rules?: MaskMoneyRules)`
 
-```tsx
+```ts
 import { maskMoney } from "ts-simple-mask";
 
 const MONEY_RULES = {
@@ -135,7 +137,7 @@ const unmasked = tsMask.unmasked;
 
 `unmaskMoney(value: string, rules?: MaskMoneyRules)`
 
-```tsx
+```ts
 import { maskMoney } from "ts-simple-mask";
 
 const MONEY_RULES = {
@@ -155,7 +157,7 @@ To customize the mask, you need to send the rules via optional parameter.
 
 Send the same rules to remove the mask.
 
-```tsx
+```ts
 const CUSTOMIZED_RULES = new Map([
   ["#", /[A-Za-z]/],
   ["9", /\d/],
@@ -165,11 +167,23 @@ const tsMask = mask("01011987", "99/99/9999", CUSTOMIZED_RULES);
 const unmasked = unmask("01/01/1987", "99/99/9999", CUSTOMIZED_RULES);
 ```
 
-```tsx
+```ts
+interface MaskMoneyRules {
+  thousands: string;
+  decimal: string;
+  precision: number;
+  prefix?: string;
+  suffix?: string;
+}
+```
+
+```ts
 const CUSTOMIZED_MONEY_RULES = {
   thousands: " ",
   decimal: ".",
   precision: 3,
+  prefix: "R$",
+  suffix: "!",
 };
 
 const tsMask = maskMoney("123456789", CUSTOMIZED_MONEY_RULES);
