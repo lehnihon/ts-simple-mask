@@ -96,7 +96,7 @@ const unmasked = tsMask.unmasked;
 
 - Mask text
 
-`mask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
+`mask(value: string, maskRule: string, rules?: Map<string, MaskOptions>)`
 
 ```ts
 import { mask } from "ts-simple-mask";
@@ -108,7 +108,7 @@ const unmasked = tsMask.unmasked;
 
 - Unmask text
 
-`unmask(value: string, maskRule: string, rules?: Map<string, RegExp>)`
+`unmask(value: string, maskRule: string, rules?: Map<string, MaskOptions>)`
 
 ```ts
 import { unmask } from "ts-simple-mask";
@@ -178,6 +178,14 @@ interface MaskOptions {
   pattern: RegExp;
   transform?: (value: string) => string;
 }
+
+interface MaskMoneyRules {
+  thousands: string;
+  decimal: string;
+  precision: number;
+  prefix?: string;
+  suffix?: string;
+}
 ```
 
 ```ts
@@ -188,16 +196,6 @@ const CUSTOMIZED_RULES = new Map([
 
 const tsMask = mask("01011987", "99/99/9999", CUSTOMIZED_RULES);
 const unmasked = unmask("01/01/1987", "99/99/9999", CUSTOMIZED_RULES);
-```
-
-```ts
-interface MaskMoneyRules {
-  thousands: string;
-  decimal: string;
-  precision: number;
-  prefix?: string;
-  suffix?: string;
-}
 ```
 
 ```ts
