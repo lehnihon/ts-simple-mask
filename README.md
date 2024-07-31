@@ -60,9 +60,25 @@ There are some ready-to-use standard rules:
 
 ```ts
 [
-  ["S", /[A-Za-z]/],
-  ["0", /\d/],
-  ["A", /[a-zA-Z0-9]/],
+  ["0", { pattern: /\d/ }],
+  ["A", { pattern: /[a-zA-Z0-9]/ }],
+  ["S", { pattern: /[A-Za-z]/ }],
+  [
+    "X",
+    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleUpperCase() },
+  ],
+  [
+    "x",
+    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleLowerCase() },
+  ],
+  [
+    "Z",
+    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleUpperCase() },
+  ],
+  [
+    "z",
+    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleLowerCase() },
+  ],
 ];
 ```
 
@@ -158,9 +174,16 @@ To customize the mask, you need to send the rules via optional parameter.
 Send the same rules to remove the mask.
 
 ```ts
+interface MaskOptions {
+  pattern: RegExp;
+  transform?: (value: string) => string;
+}
+```
+
+```ts
 const CUSTOMIZED_RULES = new Map([
-  ["#", /[A-Za-z]/],
-  ["9", /\d/],
+  ["#", { pattern: /[A-Za-z]/ }],
+  ["9", { pattern: /\d/ }],
 ]);
 
 const tsMask = mask("01011987", "99/99/9999", CUSTOMIZED_RULES);

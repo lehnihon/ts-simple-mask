@@ -1,22 +1,25 @@
 import { DEFAULT_MONEY_RULES } from "../constants";
 import { MaskType } from "../enums";
 import { DEFAULT_RULES } from "../maps";
-import { MaskMoneyRules } from "../types";
+import { MaskMoneyRules, MaskOptions } from "../types";
 
 export const mask = (
   value: string,
   maskRule: string,
-  rules?: Map<string, RegExp>
+  rules?: Map<string, MaskOptions>
 ) => {
   let i = 0;
   const unmasked = unmask(value, maskRule, rules);
   const masked = [...maskRule].reduce((acc, char) => {
     const currentValue = unmasked[i];
     if (!currentValue) return acc;
-    const regex = (rules ?? DEFAULT_RULES).get(char);
-    return regex
-      ? ++i && regex.test(currentValue)
-        ? acc + currentValue
+    const currentRule = (rules ?? DEFAULT_RULES).get(char);
+    return currentRule
+      ? ++i && currentRule.pattern.test(currentValue)
+        ? acc +
+          (currentRule?.transform
+            ? currentRule.transform(currentValue)
+            : currentValue)
         : acc
       : acc + char;
   }, "");
@@ -30,7 +33,7 @@ export const mask = (
 export const unmask = (
   value: string,
   maskRule: string,
-  rules?: Map<string, RegExp>
+  rules?: Map<string, MaskOptions>
 ) => {
   return value.replace(
     new RegExp(
@@ -55,7 +58,7 @@ export const getMask = (value: string, type: MaskType) => {
         ? "(00)0000-0000"
         : "(00)00000-0000";
     case MaskType.LICENSE_PLATE_BR:
-      return "SSS-0A00";
+      return "XXX-0Z00";
     case MaskType.ZIPCODE_BR:
       return "00000-000";
     default:
