@@ -47,11 +47,11 @@ export const unmask = (
 export const getMask = (value: string, type: MaskType) => {
   switch (type) {
     case MaskType.DOCUMENT_BR:
-      return value.replace(/[^0-9]/g, "").length <= 11
+      return removeSpecialChar(value).length <= 11
         ? "000.000.000-00"
         : "00.000.000/0000-00";
     case MaskType.PHONE_BR:
-      return value.replace(/[^0-9]/g, "").length <= 10
+      return removeSpecialChar(value).length <= 10
         ? "(00)0000-0000"
         : "(00)00000-0000";
     case MaskType.LICENSE_PLATE_BR:
@@ -66,18 +66,21 @@ export const getMask = (value: string, type: MaskType) => {
 export const maskMoney = (value: string, rules?: MaskMoneyRules) => {
   const MONEY_RULES = validateMoneyRules(rules);
 
-  const masked = clearMoneyValue(value, MONEY_RULES.precision)
-    .toFixed(MONEY_RULES.precision)
-    .replace(".", MONEY_RULES.precision === 0 ? "" : MONEY_RULES.decimal)
-    .replace(
-      new RegExp(
-        MONEY_RULES.precision === 0
-          ? "(\\d{1,3})(?=(\\d{3})+(?!\\d))"
-          : `(\\d)(?=(\\d{3})+${scapeRegex(MONEY_RULES.decimal)})`,
-        "g"
-      ),
-      `$1${MONEY_RULES.thousands}`
-    );
+  const masked =
+    (rules?.prefix || "") +
+    clearMoneyValue(value, MONEY_RULES.precision)
+      .toFixed(MONEY_RULES.precision)
+      .replace(".", MONEY_RULES.precision === 0 ? "" : MONEY_RULES.decimal)
+      .replace(
+        new RegExp(
+          MONEY_RULES.precision === 0
+            ? "(\\d{1,3})(?=(\\d{3})+(?!\\d))"
+            : `(\\d)(?=(\\d{3})+${scapeRegex(MONEY_RULES.decimal)})`,
+          "g"
+        ),
+        `$1${MONEY_RULES.thousands}`
+      ) +
+    (rules?.suffix || "");
   return {
     masked,
     unmasked: unmaskMoney(masked, MONEY_RULES),
@@ -87,21 +90,20 @@ export const maskMoney = (value: string, rules?: MaskMoneyRules) => {
 export const unmaskMoney = (value: string, rules?: MaskMoneyRules) => {
   const MONEY_RULES = validateMoneyRules(rules);
   if (!value) return "0";
-  if (MONEY_RULES.precision === 0) return `${value.replace(/[^0-9]/g, "")}`;
-  const { decimalPart, integerPart } = splitIntegerDecimal(value);
+  if (MONEY_RULES.precision === 0) return onlyDigits(value);
+  const { decimalPart, integerPart } = splitIntegerDecimal(value, MONEY_RULES);
   return `${integerPart}.${decimalPart}`;
 };
 
-const splitIntegerDecimal = (value: string) => {
-  const numberParts = value.split(/\D/);
-  const decimalPart = numberParts.pop();
-  const integerPart = numberParts.join("");
+const splitIntegerDecimal = (value: string, rules: MaskMoneyRules) => {
+  const numberParts = value.split(rules.decimal);
+  const decimalPart = onlyDigits(numberParts.pop());
+  const integerPart = onlyDigits(numberParts.join(""));
   return { decimalPart, integerPart };
 };
 
 const clearMoneyValue = (value: string, precision: number) =>
-  Number(value.replace(/[^0-9]/g, "")) /
-  Number(`1${"".padEnd(precision, "0")}`);
+  Number(onlyDigits(value)) / Number(`1${"".padEnd(precision, "0")}`);
 
 const validateMoneyRules = (rules?: MaskMoneyRules) => {
   if (!rules) return DEFAULT_MONEY_RULES;
@@ -112,6 +114,10 @@ const validateMoneyRules = (rules?: MaskMoneyRules) => {
   };
 };
 
-const scapeRegex = (value: string) => {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-};
+const scapeRegex = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const removeSpecialChar = (value?: string) =>
+  (value || "").replace(/[^a-zA-Z0-9]/g, "");
+
+const onlyDigits = (value?: string) => (value || "").replace(/[^0-9]/g, "");

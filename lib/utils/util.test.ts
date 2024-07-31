@@ -89,8 +89,14 @@ describe("Mask Money Utils", () => {
   test("mask money integer", () => {
     const value = "123456789";
     const unmasked = "123456789";
-    const masked = "123 456 789";
-    const RULES = { thousands: " ", decimal: ",", precision: 0 };
+    const masked = "R$ 123 456 789 *";
+    const RULES = {
+      thousands: " ",
+      decimal: ",",
+      precision: 0,
+      prefix: "R$ ",
+      suffix: " *",
+    };
     expect(maskMoney(value, RULES)).toStrictEqual({
       masked,
       unmasked,
@@ -98,17 +104,29 @@ describe("Mask Money Utils", () => {
   });
 
   test("unmask money integer", () => {
-    const masked = "123 456 789";
+    const masked = "R$ 123 456 789 *";
     const unmasked = "123456789";
-    const RULES = { thousands: " ", decimal: ",", precision: 0 };
+    const RULES = {
+      thousands: " ",
+      decimal: ",",
+      precision: 0,
+      prefix: "R$ ",
+      suffix: " *",
+    };
     expect(unmaskMoney(masked, RULES)).toBe(unmasked);
   });
 
   test("mask money decimal", () => {
     const text = "123456789";
-    const masked = "1 234.56789";
+    const masked = "R$ 1 234.56789 *";
     const unmasked = "1234.56789";
-    const RULES = { thousands: " ", decimal: ".", precision: 5 };
+    const RULES = {
+      thousands: " ",
+      decimal: ".",
+      precision: 5,
+      prefix: "R$ ",
+      suffix: " *",
+    };
     expect(maskMoney(text, RULES)).toStrictEqual({
       masked,
       unmasked,
@@ -116,9 +134,15 @@ describe("Mask Money Utils", () => {
   });
 
   test("unmask money decimal", () => {
-    const masked = "1 234,567";
+    const masked = "R$ 1 234,567 *";
     const unmasked = "1234.567";
-    const RULES = { thousands: " ", decimal: ",", precision: 3 };
+    const RULES = {
+      thousands: " ",
+      decimal: ",",
+      precision: 3,
+      prefix: "R$ ",
+      suffix: " *",
+    };
     expect(unmaskMoney(masked, RULES)).toBe(unmasked);
   });
 });
