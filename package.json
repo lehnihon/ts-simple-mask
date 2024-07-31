@@ -1,6 +1,6 @@
 {
   "name": "ts-simple-mask",
-  "version": "0.0.24",
+  "version": "0.1.0",
   "description": "A simple and versatile way to make text input masks",
   "type": "module",
   "files": [
