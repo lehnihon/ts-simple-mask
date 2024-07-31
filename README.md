@@ -217,6 +217,16 @@ const unmasked = unmaskMoney("123 456.789", CUSTOMIZED_MONEY_RULES);
 
 Practical use examples
 
+### Vanilla JS,TS
+
+```tsx
+import { mask } from "ts-simple-mask";
+
+const value = "31072024";
+const tsMask = mask(value, "00/00/0000");
+document.querySelector(".masked").innerHTML = tsMask.masked;
+```
+
 ### React
 
 ```tsx
@@ -269,6 +279,18 @@ const onInput = (event) => {
 <template>
   <input @input="onInput" />
 </template>
+```
+
+### Nodejs (Adonisjs)
+
+```ts
+import { getMask, mask, MaskType } from "ts-simple-mask";
+
+router.get("/", async () => {
+  const value = "123456789";
+  const tsMask = mask(value, getMask(value, MaskType.ZIPCODE_BR));
+  return tsMask;
+});
 ```
 
 ![divider](./divider.png)
