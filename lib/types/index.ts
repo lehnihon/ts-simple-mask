@@ -5,3 +5,8 @@ export interface MaskMoneyRules {
   prefix?: string;
   suffix?: string;
 }
+
+export interface MaskOptions {
+  pattern: RegExp;
+  transform?: (value: string) => string;
+}

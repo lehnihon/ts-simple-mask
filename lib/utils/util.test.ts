@@ -15,9 +15,21 @@ describe("Mask Utils", () => {
   });
 
   test("mask formated", () => {
-    const value = "ABC-123456";
+    const value = "abc-1234";
     const unmaskedPlate = "ABC1234";
     const maskedPlate = "ABC-1234";
+    expect(
+      mask(value, getMask(value, MaskType.LICENSE_PLATE_BR))
+    ).toStrictEqual({
+      masked: maskedPlate,
+      unmasked: unmaskedPlate,
+    });
+  });
+
+  test("mask transform", () => {
+    const value = "abc-1d34";
+    const unmaskedPlate = "ABC1D34";
+    const maskedPlate = "ABC-1D34";
     expect(
       mask(value, getMask(value, MaskType.LICENSE_PLATE_BR))
     ).toStrictEqual({
