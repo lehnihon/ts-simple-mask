@@ -1,6 +1,6 @@
 import { MaskType } from "../enums";
 import { DEFAULT_RULES } from "../maps";
-import { MaskMoneyRules, MaskOptions } from "../types";
+import { MaskMoneyRules, MaskOptions, TsMaskOptions } from "../types";
 import {
   clearMoneyValue,
   onlyDigits,
@@ -12,7 +12,7 @@ import {
   validateMoneyRules,
 } from "../utils";
 
-export const mask = (
+const mask = (
   value: string,
   maskRule: string,
   rules?: Map<string, MaskOptions>
@@ -23,11 +23,10 @@ export const mask = (
     const currentValue = unmasked[i];
     if (!currentValue) return acc;
     const currentRule = (rules ?? DEFAULT_RULES).get(char);
-    return currentRule
-      ? currentRule.pattern.test(currentValue) && ++i
-        ? transformValidateMask(currentValue, acc, currentRule)
-        : acc
-      : acc + char;
+    if (!currentRule) return acc + char;
+    return currentRule.pattern.test(currentValue) && ++i
+      ? transformValidateMask(currentValue, acc, currentRule)
+      : ((i = -1), acc);
   }, "");
 
   return {
@@ -36,7 +35,7 @@ export const mask = (
   };
 };
 
-export const unmask = (
+const unmask = (
   value: string,
   maskRule: string,
   rules?: Map<string, MaskOptions>
@@ -53,7 +52,7 @@ export const unmask = (
   );
 };
 
-export const maskMoney = (value: string, rules?: MaskMoneyRules) => {
+const maskMoney = (value: string, rules?: MaskMoneyRules) => {
   const MONEY_RULES = validateMoneyRules(rules);
   const masked =
     (rules?.prefix || "") +
@@ -71,7 +70,7 @@ export const maskMoney = (value: string, rules?: MaskMoneyRules) => {
   };
 };
 
-export const unmaskMoney = (value: string, rules?: MaskMoneyRules) => {
+const unmaskMoney = (value: string, rules?: MaskMoneyRules) => {
   const MONEY_RULES = validateMoneyRules(rules);
   if (!value) return "0";
   if (MONEY_RULES.precision === 0) return onlyDigits(value);
@@ -79,7 +78,7 @@ export const unmaskMoney = (value: string, rules?: MaskMoneyRules) => {
   return `${integerPart}.${decimalPart}`;
 };
 
-export const getMask = (value: string, type: MaskType) => {
+const getMask = (value: string, type: MaskType) => {
   switch (type) {
     case MaskType.DOCUMENT_BR:
       return removeSpecialChar(value).length <= 11
@@ -97,3 +96,35 @@ export const getMask = (value: string, type: MaskType) => {
       return "";
   }
 };
+
+const createTsMask = (props?: TsMaskOptions) => {
+  let _rulesMask = props?.rulesMask ?? DEFAULT_RULES;
+  let _rulesMoney = validateMoneyRules(props?.rulesMoney);
+
+  const setRuleMask = (rules: Map<string, MaskOptions>) => {
+    _rulesMask = rules;
+  };
+
+  const setRuleMoney = (rules: MaskMoneyRules) => {
+    _rulesMoney = rules;
+  };
+
+  const getRules = () => {
+    return { _rulesMask, _rulesMoney };
+  };
+
+  return {
+    mask: (value: string, maskRule: string) =>
+      mask(value, maskRule, _rulesMask),
+    unmask: (value: string, maskRule: string) =>
+      unmask(value, maskRule, _rulesMask),
+    maskMoney: (value: string) => maskMoney(value, _rulesMoney),
+    unmaskMoney: (value: string) => unmaskMoney(value, _rulesMoney),
+    getMask,
+    setRuleMask,
+    setRuleMoney,
+    getRules,
+  };
+};
+
+export default createTsMask;
