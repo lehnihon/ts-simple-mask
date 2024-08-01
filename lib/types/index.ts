@@ -8,5 +8,6 @@ export interface MaskMoneyRules {
 
 export interface MaskOptions {
   pattern: RegExp;
-  transform?: (value: string) => string;
+  transform?: (char: string) => string;
+  validate?: (value: string) => boolean;
 }

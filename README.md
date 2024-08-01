@@ -5,7 +5,7 @@
 <h1 align="center">Typescript Simple Mask</h1>
 </br>
 <p align="center">
-  <b>A simple and versatile way to make text input masks</b>
+  <b>A simple and versatile way to make text input masks. Lightweight and dependency free.</b>
 </p>
 </br>
 <p align="center">
@@ -169,14 +169,21 @@ const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
 
 ## Customize
 
-To customize the mask, you need to send the rules via optional parameter.
+- Interfaces
 
-Send the same rules to remove the mask.
+`validate: (value) => Number(value) < 1000`
+
+Only allows values ​​less than 1000
+
+`transform: (value) => value.toLocaleUpperCase()`
+
+Converts each character to uppercase
 
 ```ts
 interface MaskOptions {
   pattern: RegExp;
-  transform?: (value: string) => string;
+  transform?: (char: string) => string;
+  validate?: (value: string) => boolean;
 }
 
 interface MaskMoneyRules {
@@ -187,6 +194,11 @@ interface MaskMoneyRules {
   suffix?: string;
 }
 ```
+
+- Methods
+
+To customize the mask, you need to send the rules via optional parameter.
+Send the same rules to remove the mask.
 
 ```ts
 const CUSTOMIZED_RULES = new Map([
@@ -217,7 +229,7 @@ const unmasked = unmaskMoney("123 456.789", CUSTOMIZED_MONEY_RULES);
 
 Practical use examples
 
-### Vanilla JS,TS
+### Vanilla JS
 
 ```tsx
 import { mask } from "ts-simple-mask";
