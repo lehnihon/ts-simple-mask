@@ -1,6 +1,6 @@
 import { MaskType } from "../enums";
 import { DEFAULT_RULES } from "../maps";
-import { MaskMoneyRules, MaskOptions } from "../types";
+import { MaskMoneyRules, MaskOptions, TsMaskOptions } from "../types";
 import {
   clearMoneyValue,
   onlyDigits,
@@ -12,39 +12,35 @@ import {
   validateMoneyRules,
 } from "../utils";
 
-export const mask = (
+const mask = (
   value: string,
   maskRule: string,
-  rules?: Map<string, MaskOptions>
+  rules: Map<string, MaskOptions>
 ) => {
   let i = 0;
-  const unmasked = unmask(value, maskRule, rules);
+  const unmasked = unmask(value, rules);
   const masked = [...maskRule].reduce((acc, char) => {
     const currentValue = unmasked[i];
     if (!currentValue) return acc;
-    const currentRule = (rules ?? DEFAULT_RULES).get(char);
-    return currentRule
-      ? currentRule.pattern.test(currentValue) && ++i
-        ? transformValidateMask(currentValue, acc, currentRule)
-        : acc
-      : acc + char;
+    const currentRule = rules.get(char);
+    if (!currentRule) return acc + char;
+    return currentRule.pattern.test(currentValue) && ++i
+      ? transformValidateMask(currentValue, acc, currentRule)
+      : ((i = -1), acc);
   }, "");
 
   return {
     masked,
-    unmasked: unmask(masked, maskRule, rules),
+    unmasked: unmask(masked, rules),
   };
 };
 
-export const unmask = (
-  value: string,
-  maskRule: string,
-  rules?: Map<string, MaskOptions>
-) => {
+const unmask = (value: string, rules: Map<string, MaskOptions>) => {
+  const patterns = [...rules.values()].map((rule) => rule.pattern);
   return value.replace(
     new RegExp(
-      `${[...maskRule]
-        .filter((char) => !(rules ?? DEFAULT_RULES).get(char))
+      `${[...value]
+        .filter((char) => !patterns.find((pattern) => pattern.test(char)))
         .map((char) => scapeRegex(char))
         .join("|")}`,
       "g"
@@ -53,33 +49,31 @@ export const unmask = (
   );
 };
 
-export const maskMoney = (value: string, rules?: MaskMoneyRules) => {
-  const MONEY_RULES = validateMoneyRules(rules);
+const maskMoney = (value: string, rules: MaskMoneyRules) => {
   const masked =
-    (rules?.prefix || "") +
-    clearMoneyValue(value, MONEY_RULES.precision)
-      .toFixed(MONEY_RULES.precision)
-      .replace(".", MONEY_RULES.precision === 0 ? "" : MONEY_RULES.decimal)
+    (rules.prefix || "") +
+    clearMoneyValue(value, rules.precision)
+      .toFixed(rules.precision)
+      .replace(".", rules.precision === 0 ? "" : rules.decimal)
       .replace(
-        regexMaskMoney(MONEY_RULES.precision, MONEY_RULES.decimal),
-        `$1${MONEY_RULES.thousands}`
+        regexMaskMoney(rules.precision, rules.decimal),
+        `$1${rules.thousands}`
       ) +
-    (rules?.suffix || "");
+    (rules.suffix || "");
   return {
     masked,
-    unmasked: unmaskMoney(masked, MONEY_RULES),
+    unmasked: unmaskMoney(masked, rules),
   };
 };
 
-export const unmaskMoney = (value: string, rules?: MaskMoneyRules) => {
-  const MONEY_RULES = validateMoneyRules(rules);
+const unmaskMoney = (value: string, rules: MaskMoneyRules) => {
   if (!value) return "0";
-  if (MONEY_RULES.precision === 0) return onlyDigits(value);
-  const { decimalPart, integerPart } = splitIntegerDecimal(value, MONEY_RULES);
+  if (rules.precision === 0) return onlyDigits(value);
+  const { decimalPart, integerPart } = splitIntegerDecimal(value, rules);
   return `${integerPart}.${decimalPart}`;
 };
 
-export const getMask = (value: string, type: MaskType) => {
+const getMask = (value: string, type: MaskType) => {
   switch (type) {
     case MaskType.DOCUMENT_BR:
       return removeSpecialChar(value).length <= 11
@@ -97,3 +91,40 @@ export const getMask = (value: string, type: MaskType) => {
       return "";
   }
 };
+
+const getPlaceholder = (maskRule: string, rules: Map<string, MaskOptions>) =>
+  [...maskRule].reduce((acc, char) => {
+    return rules.get(char) ? acc + "_" : acc + char;
+  }, "");
+
+const createTsMask = (props?: TsMaskOptions) => {
+  let _rulesMask = props?.rulesMask ?? DEFAULT_RULES;
+  let _rulesMoney = validateMoneyRules(props?.rulesMoney);
+
+  const setRuleMask = (rules: Map<string, MaskOptions>) => {
+    _rulesMask = rules;
+  };
+
+  const setRuleMoney = (rules: MaskMoneyRules) => {
+    _rulesMoney = rules;
+  };
+
+  const getRules = () => {
+    return { _rulesMask, _rulesMoney };
+  };
+
+  return {
+    mask: (value: string, maskRule: string) =>
+      mask(value, maskRule, _rulesMask),
+    unmask: (value: string) => unmask(value, _rulesMask),
+    maskMoney: (value: string) => maskMoney(value, _rulesMoney),
+    unmaskMoney: (value: string) => unmaskMoney(value, _rulesMoney),
+    getPlaceholder: (maskRule: string) => getPlaceholder(maskRule, _rulesMask),
+    getMask,
+    setRuleMask,
+    setRuleMoney,
+    getRules,
+  };
+};
+
+export default createTsMask;
