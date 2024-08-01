@@ -1,3 +1,8 @@
+export interface TsMaskOptions {
+  rulesMask?: Map<string, MaskOptions>;
+  rulesMoney?: MaskMoneyRules;
+}
+
 export interface MaskMoneyRules {
   thousands: string;
   decimal: string;
