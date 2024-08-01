@@ -96,9 +96,7 @@ describe("Mask Utils", () => {
     const maskedPhone = "(82)3542-5482";
     const unmaskedPhone = "8235425482";
 
-    expect(
-      TsMask.unmask(maskedPhone, TsMask.getMask(maskedPhone, MaskType.PHONE_BR))
-    ).toBe(unmaskedPhone);
+    expect(TsMask.unmask(maskedPhone)).toBe(unmaskedPhone);
   });
 
   test("unmask document", () => {
@@ -106,12 +104,7 @@ describe("Mask Utils", () => {
     const maskedDocument = "41.996.557/0001-01";
     const unmaskedDocument = "41996557000101";
 
-    expect(
-      TsMask.unmask(
-        maskedDocument,
-        TsMask.getMask(maskedDocument, MaskType.DOCUMENT_BR)
-      )
-    ).toBe(unmaskedDocument);
+    expect(TsMask.unmask(maskedDocument)).toBe(unmaskedDocument);
   });
 
   test("CPF mask", () => {
