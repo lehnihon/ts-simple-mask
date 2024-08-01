@@ -1,5 +1,6 @@
 import { getMask, mask, maskMoney, unmask, unmaskMoney } from ".";
 import { MaskType } from "../enums";
+import { MaskOptions } from "../types";
 
 describe("Mask Utils", () => {
   test("mask default", () => {
@@ -33,6 +34,26 @@ describe("Mask Utils", () => {
     expect(
       mask(value, getMask(value, MaskType.LICENSE_PLATE_BR))
     ).toStrictEqual({
+      masked: maskedPlate,
+      unmasked: unmaskedPlate,
+    });
+  });
+
+  test("mask validate", () => {
+    const CUSTOMIZED_RULES = new Map<string, MaskOptions>([
+      [
+        "9",
+        {
+          pattern: /\d/,
+          validate: (value) => Number(value) < 1000,
+        },
+      ],
+    ]);
+
+    const value = "1000";
+    const unmaskedPlate = "100";
+    const maskedPlate = "100";
+    expect(mask(value, "9999", CUSTOMIZED_RULES)).toStrictEqual({
       masked: maskedPlate,
       unmasked: unmaskedPlate,
     });
