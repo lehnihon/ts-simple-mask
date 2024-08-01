@@ -58,36 +58,19 @@ npm install ts-simple-mask
 
 There are some ready-to-use standard rules:
 
-```ts
-[
-  ["0", { pattern: /\d/ }],
-  ["A", { pattern: /[a-zA-Z0-9]/ }],
-  ["S", { pattern: /[A-Za-z]/ }],
-  [
-    "X",
-    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleUpperCase() },
-  ],
-  [
-    "x",
-    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleLowerCase() },
-  ],
-  [
-    "Z",
-    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleUpperCase() },
-  ],
-  [
-    "z",
-    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleLowerCase() },
-  ],
-];
-```
+- '0': { pattern: /\d/ } = any digit
+- 'A': { pattern: /[a-zA-Z0-9]/ } = any alphanumeric
+- 'S': { pattern: /[A-Za-z]/ } = any letter
+- 'X': { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleUpperCase() } = any letter and transform to uppercase
+- 'x': { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleLowerCase() } = any letter and transform to lowercase
+- 'Z': { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleUpperCase() } = any alphanumeric and transform to uppercase
+- 'z': { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleLowerCase() } = any alphanumeric and transform to lowercase
 
 ```ts
-import { mask } from "ts-simple-mask";
+import createTsMask from "ts-simple-mask";
 
-const tsMask = mask("01011987", "00/00/0000");
-const masked = tsMask.masked;
-const unmasked = tsMask.unmasked;
+const TsMask = createTsMask();
+const { masked, unmasked } = TsMask.mask("01011987", "00/00/0000");
 ```
 
 ![divider](./divider.png)
@@ -96,24 +79,46 @@ const unmasked = tsMask.unmasked;
 
 - Mask text
 
-`mask(value: string, maskRule: string, rules?: Map<string, MaskOptions>)`
+`mask(value: string, maskRule: string)`
 
 ```ts
-import { mask } from "ts-simple-mask";
+import createTsMask from "ts-simple-mask";
 
-const tsMask = mask("ABC-1A23", "SSS-0A00");
-const masked = tsMask.masked;
-const unmasked = tsMask.unmasked;
+const TsMask = createTsMask();
+const { masked, unmasked } = TsMask.mask("ABC-1A23", "SSS-0A00");
 ```
 
 - Unmask text
 
-`unmask(value: string, maskRule: string, rules?: Map<string, MaskOptions>)`
+`unmask(value: string)`
 
 ```ts
-import { unmask } from "ts-simple-mask";
+import createTsMask from "ts-simple-mask";
 
-const unmasked = unmask("ABC-1A23", "SSS-0A00");
+const TsMask = createTsMask();
+const unmasked = TsMask.unmask("ABC-1A23");
+```
+
+- Mask money
+
+`maskMoney(value: string)`
+
+```ts
+import createTsMask from "ts-simple-mask";
+
+const TsMask = createTsMask();
+const { masked, unmasked } = TsMask.maskMoney("123456");
+```
+
+- Unmask money
+
+`unmaskMoney(value: string)`
+
+```ts
+import createTsMask from "ts-simple-mask";
+
+const TsMask = createTsMask();
+const unmasked = TsMask.unmaskMoney("1.234,56");
 ```
 
 - Get default masks
@@ -121,48 +126,22 @@ const unmasked = unmask("ABC-1A23", "SSS-0A00");
 `getMask(value: string, type: MaskType)`
 
 ```ts
-enum MaskType {
-  DOCUMENT_BR,
-  PHONE_BR,
-  LICENSE_PLATE_BR,
-  ZIPCODE_BR,
-}
+import createTsMask from "ts-simple-mask";
 
-mask("46963603006", getMask(value, MaskType.DOCUMENT_BR));
+const TsMask = createTsMask();
+const value = "46963603006";
+TsMask.mask(value, TsMask.getMask(value, MaskType.DOCUMENT_BR));
 ```
 
-- Mask money
+- Get placeholder
 
-`maskMoney(value: string, rules?: MaskMoneyRules)`
-
-```ts
-import { maskMoney } from "ts-simple-mask";
-
-const MONEY_RULES = {
-  thousands: ".",
-  decimal: ",",
-  precision: 2,
-};
-
-const tsMask = maskMoney("123456", MONEY_RULES);
-const masked = tsMask.masked;
-const unmasked = tsMask.unmasked;
-```
-
-- Unmask money
-
-`unmaskMoney(value: string, rules?: MaskMoneyRules)`
+`getPlaceholder(maskRule: string)`
 
 ```ts
-import { maskMoney } from "ts-simple-mask";
+import createTsMask from "ts-simple-mask";
 
-const MONEY_RULES = {
-  thousands: ".",
-  decimal: ",",
-  precision: 2,
-};
-
-const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
+const TsMask = createTsMask();
+const placeholder = TsMask.getPlaceholder("SSS-0A00");
 ```
 
 ![divider](./divider.png)
@@ -171,15 +150,12 @@ const unmasked = unmaskMoney("1.234,56", MONEY_RULES);
 
 - Interfaces
 
-`validate: (value) => Number(value) < 1000`
-
-Only allows values ​​less than 1000
-
-`transform: (value) => value.toLocaleUpperCase()`
-
-Converts each character to uppercase
-
 ```ts
+export interface TsMaskOptions {
+  rulesMask?: Map<string, MaskOptions>;
+  rulesMoney?: MaskMoneyRules;
+}
+
 interface MaskOptions {
   pattern: RegExp;
   transform?: (char: string) => string;
@@ -195,23 +171,36 @@ interface MaskMoneyRules {
 }
 ```
 
-- Methods
+- Custom Rules
 
 To customize the mask, you need to send the rules via optional parameter.
-Send the same rules to remove the mask.
 
 ```ts
-const CUSTOMIZED_RULES = new Map([
+import createTsMask, { MaskOptions } from "ts-simple-mask";
+
+const rulesMask = new Map<string, MaskOptions>([
   ["#", { pattern: /[A-Za-z]/ }],
-  ["9", { pattern: /\d/ }],
+  ["9", { pattern: /\d/, validate: (value) => Number(value) < 1001 }],
 ]);
 
-const tsMask = mask("01011987", "99/99/9999", CUSTOMIZED_RULES);
-const unmasked = unmask("01/01/1987", "99/99/9999", CUSTOMIZED_RULES);
+const TsMask = createTsMask({
+  rulesMask,
+});
+
+const { masked, unmasked } = TsMask.mask("1000", "9999");
+//the validate method only allows numbers smaller than 1000
+
+const { masked, unmasked } = TsMask.mask("1001", "9999");
+//so this mask will return 100
+
+TsMask.setRuleMask(rulesMask);
+//change the mask rules
 ```
 
 ```ts
-const CUSTOMIZED_MONEY_RULES = {
+import createTsMask from "ts-simple-mask";
+
+const rulesMoney = {
   thousands: " ",
   decimal: ".",
   precision: 3,
@@ -219,8 +208,17 @@ const CUSTOMIZED_MONEY_RULES = {
   suffix: "!",
 };
 
-const tsMask = maskMoney("123456789", CUSTOMIZED_MONEY_RULES);
-const unmasked = unmaskMoney("123 456.789", CUSTOMIZED_MONEY_RULES);
+const TsMask = createTsMask({
+  rulesMoney,
+});
+
+const { masked, unmasked } = TsMask.maskMoney("123456789");
+
+TsMask.setRuleMoney(rulesMoney);
+//change the money rules
+
+TsMask.getRules();
+//returns active rules
 ```
 
 ![divider](./divider.png)
@@ -232,25 +230,29 @@ Practical use examples
 ### Vanilla JS
 
 ```tsx
-import { mask } from "ts-simple-mask";
+import createTsMask from "ts-simple-mask";
+
+const TsMask = createTsMask();
 
 const value = "31072024";
-const tsMask = mask(value, "00/00/0000");
-document.querySelector(".masked").innerHTML = tsMask.masked;
+const { masked } = TsMask.mask(value, "00/00/0000");
+document.querySelector(".masked").innerHTML = masked;
 ```
 
 ### React
 
 ```tsx
 import React from "react";
-import { maskMoney } from "ts-simple-mask";
+import createTsMask from "ts-simple-mask";
+
+const TsMask = createTsMask();
 
 export const TextForm = () => {
   const [value, setValue] = React.useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tsMask = maskMoney(e.target.value);
-    setValue(tsMask.masked);
+    const { masked } = TsMask.maskMoney(e.target.value);
+    setValue(masked);
   };
 
   return <input type="text" value={value} onChange={handleChange} />;
@@ -262,14 +264,19 @@ export const TextForm = () => {
 ```tsx
 import React from "react";
 import { TextInput } from "react-native";
-import { getMask, mask, MaskType } from "ts-simple-mask";
+import createTsMask, { MaskType } from "ts-simple-mask";
+
+const TsMask = createTsMask();
 
 export const TextForm = () => {
   const [value, setValue] = React.useState("");
 
   const handleChange = (text: string) => {
-    const tsMask = mask(text, getMask(text, MaskType.DOCUMENT_BR));
-    setValue(tsMask.masked);
+    const { masked } = TsMask.mask(
+      text,
+      TsMask.getMask(text, MaskType.DOCUMENT_BR)
+    );
+    setValue(masked);
   };
 
   return <TextInput onChangeText={handleChange} value={value} />;
@@ -280,11 +287,13 @@ export const TextForm = () => {
 
 ```vue
 <script setup>
-import { mask } from "ts-simple-mask";
+import createTsMask from "ts-simple-mask";
+
+const TsMask = createTsMask();
 
 const onInput = (event) => {
-  const tsMask = mask(event.target.value.toUpperCase(), "SSS-0A00");
-  event.target.value = tsMask.masked;
+  const { masked } = TsMask.mask(event.target.value.toUpperCase(), "SSS-0A00");
+  event.target.value = masked;
 };
 </script>
 
@@ -293,15 +302,20 @@ const onInput = (event) => {
 </template>
 ```
 
-### Nodejs (Adonisjs)
+### Nodejs
 
 ```ts
-import { getMask, mask, MaskType } from "ts-simple-mask";
+import createTsMask, { maskType } from "ts-simple-mask";
+
+const TsMask = createTsMask();
 
 router.get("/", async () => {
   const value = "123456789";
-  const tsMask = mask(value, getMask(value, MaskType.ZIPCODE_BR));
-  return tsMask;
+  const { masked } = TsMask.mask(
+    value,
+    TsMask.getMask(value, MaskType.ZIPCODE_BR)
+  );
+  return masked;
 });
 ```
 

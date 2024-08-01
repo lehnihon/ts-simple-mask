@@ -3,7 +3,7 @@ import { MaskType } from "../enums";
 import { MaskOptions } from "../types";
 
 describe("Mask Utils", () => {
-  test("mask default", () => {
+  test("default", () => {
     const TsMask = createTsMask();
     const value = "ABC12345678";
     const maskedPlate = "ABC-1234";
@@ -17,7 +17,7 @@ describe("Mask Utils", () => {
     });
   });
 
-  test("mask formated", () => {
+  test("formated", () => {
     const TsMask = createTsMask();
     const value = "abc-1234";
     const maskedPlate = "ABC-1234";
@@ -31,7 +31,7 @@ describe("Mask Utils", () => {
     });
   });
 
-  test("mask transform", () => {
+  test("transform", () => {
     const TsMask = createTsMask();
     const value = "abc-1d34";
     const maskedPlate = "ABC-1D34";
@@ -45,17 +45,18 @@ describe("Mask Utils", () => {
     });
   });
 
-  test("mask validate", () => {
+  test("validate", () => {
+    const rulesMask = new Map<string, MaskOptions>([
+      [
+        "9",
+        {
+          pattern: /\d/,
+          validate: (value) => Number(value) < 1000,
+        },
+      ],
+    ]);
     const TsMask = createTsMask({
-      rulesMask: new Map<string, MaskOptions>([
-        [
-          "9",
-          {
-            pattern: /\d/,
-            validate: (value) => Number(value) < 1000,
-          },
-        ],
-      ]),
+      rulesMask,
     });
     const value = "1000";
     const maskedPlate = "100";
@@ -67,7 +68,7 @@ describe("Mask Utils", () => {
     });
   });
 
-  test("mask wrong char", () => {
+  test("wrong char", () => {
     const TsMask = createTsMask();
     const value = "ABC";
     const maskedWrongValue = "";
@@ -79,7 +80,7 @@ describe("Mask Utils", () => {
     });
   });
 
-  test("mask wrong char typing", () => {
+  test("wrong char typing", () => {
     const TsMask = createTsMask();
     const value = "01A";
     const maskedWrongValue = "01/";
@@ -107,7 +108,7 @@ describe("Mask Utils", () => {
     expect(TsMask.unmask(maskedDocument)).toBe(unmaskedDocument);
   });
 
-  test("CPF mask", () => {
+  test("CPF", () => {
     const TsMask = createTsMask();
     const text = "3016079801999*";
     const maskedCpf = "301.607.980-19";
@@ -121,7 +122,7 @@ describe("Mask Utils", () => {
     });
   });
 
-  test("CNPJ mask", () => {
+  test("CNPJ", () => {
     const TsMask = createTsMask();
     const text = "4199655700010199";
     const maskedCnpj = "41.996.557/0001-01";
@@ -134,10 +135,17 @@ describe("Mask Utils", () => {
       unmasked: unmaskedCnpj,
     });
   });
+
+  test("get placeholder", () => {
+    const TsMask = createTsMask();
+    const placeholder = "__-__-____";
+
+    expect(TsMask.getPlaceholder("SS-SS-SSSS")).toBe(placeholder);
+  });
 });
 
 describe("Mask Money Utils", () => {
-  test("mask money", () => {
+  test("default", () => {
     const TsMask = createTsMask();
     const value = "123456789";
     const masked = "1.234.567,89";
@@ -149,7 +157,7 @@ describe("Mask Money Utils", () => {
     });
   });
 
-  test("mask money wrong value", () => {
+  test("wrong value", () => {
     const TsMask = createTsMask();
     const value = "ABC";
     const masked = "0,00";
@@ -161,7 +169,7 @@ describe("Mask Money Utils", () => {
     });
   });
 
-  test("unmask money", () => {
+  test("unmask", () => {
     const TsMask = createTsMask();
     const masked = "1.234.567,89";
     const unmasked = "1234567.89";
@@ -169,7 +177,7 @@ describe("Mask Money Utils", () => {
     expect(TsMask.unmaskMoney(masked)).toBe(unmasked);
   });
 
-  test("mask money integer", () => {
+  test("money integer", () => {
     const TsMask = createTsMask({
       rulesMoney: {
         thousands: " ",
@@ -189,7 +197,7 @@ describe("Mask Money Utils", () => {
     });
   });
 
-  test("unmask money integer", () => {
+  test("unmask integer", () => {
     const TsMask = createTsMask({
       rulesMoney: {
         thousands: " ",
@@ -205,7 +213,7 @@ describe("Mask Money Utils", () => {
     expect(TsMask.unmaskMoney(masked)).toBe(unmasked);
   });
 
-  test("mask money decimal", () => {
+  test("decimal", () => {
     const TsMask = createTsMask({
       rulesMoney: {
         thousands: " ",
@@ -225,7 +233,7 @@ describe("Mask Money Utils", () => {
     });
   });
 
-  test("unmask money decimal", () => {
+  test("unmask decimal", () => {
     const TsMask = createTsMask({
       rulesMoney: {
         thousands: " ",

@@ -92,6 +92,11 @@ const getMask = (value: string, type: MaskType) => {
   }
 };
 
+const getPlaceholder = (maskRule: string, rules: Map<string, MaskOptions>) =>
+  [...maskRule].reduce((acc, char) => {
+    return rules.get(char) ? acc + "_" : acc + char;
+  }, "");
+
 const createTsMask = (props?: TsMaskOptions) => {
   let _rulesMask = props?.rulesMask ?? DEFAULT_RULES;
   let _rulesMoney = validateMoneyRules(props?.rulesMoney);
@@ -114,6 +119,7 @@ const createTsMask = (props?: TsMaskOptions) => {
     unmask: (value: string) => unmask(value, _rulesMask),
     maskMoney: (value: string) => maskMoney(value, _rulesMoney),
     unmaskMoney: (value: string) => unmaskMoney(value, _rulesMoney),
+    getPlaceholder: (maskRule: string) => getPlaceholder(maskRule, _rulesMask),
     getMask,
     setRuleMask,
     setRuleMoney,
