@@ -50,16 +50,13 @@ const unmask = (value: string, rules: Map<string, MaskOptions>) => {
 };
 
 const maskMoney = (value: string, rules: MaskMoneyRules) => {
-  const masked =
-    (rules.prefix || "") +
-    clearMoneyValue(value, rules.precision)
-      .toFixed(rules.precision)
-      .replace(".", rules.precision === 0 ? "" : rules.decimal)
-      .replace(
-        regexMaskMoney(rules.precision, rules.decimal),
-        `$1${rules.thousands}`
-      ) +
-    (rules.suffix || "");
+  const masked = clearMoneyValue(value, rules.precision)
+    .toFixed(rules.precision)
+    .replace(".", rules.decimal)
+    .replace(
+      regexMaskMoney(rules.precision, rules.decimal),
+      `$1${rules.thousands}`
+    );
   return {
     masked,
     unmasked: unmaskMoney(masked, rules),
@@ -69,7 +66,7 @@ const maskMoney = (value: string, rules: MaskMoneyRules) => {
 const unmaskMoney = (value: string, rules: MaskMoneyRules) => {
   if (!value) return "0";
   if (rules.precision === 0) return onlyDigits(value);
-  const { decimalPart, integerPart } = splitIntegerDecimal(value, rules);
+  const { integerPart, decimalPart } = splitIntegerDecimal(value, rules);
   return `${integerPart}.${decimalPart}`;
 };
 

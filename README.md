@@ -58,13 +58,13 @@ npm install ts-simple-mask
 
 There are some ready-to-use standard rules:
 
-- '0': { pattern: /\d/ } = any digit
-- 'A': { pattern: /[a-zA-Z0-9]/ } = any alphanumeric
-- 'S': { pattern: /[A-Za-z]/ } = any letter
-- 'X': { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleUpperCase() } = any letter and transform to uppercase
-- 'x': { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleLowerCase() } = any letter and transform to lowercase
-- 'Z': { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleUpperCase() } = any alphanumeric and transform to uppercase
-- 'z': { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleLowerCase() } = any alphanumeric and transform to lowercase
+- '0' = any digit
+- 'A' = any alphanumeric
+- 'S' = any letter
+- 'X' = any letter and transform to uppercase
+- 'x' = any letter and transform to lowercase
+- 'Z' = any alphanumeric and transform to uppercase
+- 'z' = any alphanumeric and transform to lowercase
 
 ```ts
 import createTsMask from "ts-simple-mask";
@@ -144,14 +144,10 @@ const TsMask = createTsMask();
 const placeholder = TsMask.getPlaceholder("SSS-0A00");
 ```
 
-![divider](./divider.png)
-
-## Customize
-
 - Interfaces
 
 ```ts
-export interface TsMaskOptions {
+interface TsMaskOptions {
   rulesMask?: Map<string, MaskOptions>;
   rulesMoney?: MaskMoneyRules;
 }
@@ -166,9 +162,43 @@ interface MaskMoneyRules {
   thousands: string;
   decimal: string;
   precision: number;
-  prefix?: string;
-  suffix?: string;
 }
+```
+
+![divider](./divider.png)
+
+## Customize
+
+- Default Rules
+
+```ts
+const DEFAULT_MONEY_RULES = {
+  thousands: ".",
+  decimal: ",",
+  precision: 2,
+};
+
+const DEFAULT_RULES = new Map<string, MaskOptions>([
+  ["0", { pattern: /\d/ }],
+  ["A", { pattern: /[a-zA-Z0-9]/ }],
+  ["S", { pattern: /[A-Za-z]/ }],
+  [
+    "X",
+    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleUpperCase() },
+  ],
+  [
+    "x",
+    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleLowerCase() },
+  ],
+  [
+    "Z",
+    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleUpperCase() },
+  ],
+  [
+    "z",
+    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleLowerCase() },
+  ],
+]);
 ```
 
 - Custom Rules
@@ -204,8 +234,6 @@ const rulesMoney = {
   thousands: " ",
   decimal: ".",
   precision: 3,
-  prefix: "R$",
-  suffix: "!",
 };
 
 const TsMask = createTsMask({
