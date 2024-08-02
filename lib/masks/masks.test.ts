@@ -183,12 +183,10 @@ describe("Mask Money Utils", () => {
         thousands: " ",
         decimal: ",",
         precision: 0,
-        prefix: "R$ ",
-        suffix: " *",
       },
     });
     const value = "123456789";
-    const masked = "R$ 123 456 789 *";
+    const masked = "123 456 789";
     const unmasked = "123456789";
 
     expect(TsMask.maskMoney(value)).toStrictEqual({
@@ -203,11 +201,9 @@ describe("Mask Money Utils", () => {
         thousands: " ",
         decimal: ",",
         precision: 0,
-        prefix: "R$ ",
-        suffix: " *",
       },
     });
-    const masked = "R$ 123 456 789 *";
+    const masked = "123 456 789";
     const unmasked = "123456789";
 
     expect(TsMask.unmaskMoney(masked)).toBe(unmasked);
@@ -219,12 +215,10 @@ describe("Mask Money Utils", () => {
         thousands: " ",
         decimal: ".",
         precision: 5,
-        prefix: "R$ ",
-        suffix: " *",
       },
     });
     const text = "123456789";
-    const masked = "R$ 1 234.56789 *";
+    const masked = "1 234.56789";
     const unmasked = "1234.56789";
 
     expect(TsMask.maskMoney(text)).toStrictEqual({
@@ -239,11 +233,9 @@ describe("Mask Money Utils", () => {
         thousands: " ",
         decimal: ",",
         precision: 3,
-        prefix: "R$ ",
-        suffix: " *",
       },
     });
-    const masked = "R$ 1 234,567 *";
+    const masked = "1 234,567";
     const unmasked = "1234.567";
 
     expect(TsMask.unmaskMoney(masked)).toBe(unmasked);
