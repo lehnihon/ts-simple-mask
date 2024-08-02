@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" alt="tssimplemask" width="150" />
+  <img src="./logo.png" alt="tssimplemask" height="150" />
 </p>
 
 <h1 align="center">Typescript Simple Mask</h1>
@@ -218,6 +218,7 @@ const TsMask = createTsMask({
 });
 
 const { masked, unmasked } = TsMask.mask("1000", "9999");
+//return 1000
 //the validate method only allows numbers smaller than 1000
 
 const { masked, unmasked } = TsMask.mask("1001", "9999");
