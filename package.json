@@ -23,13 +23,20 @@
   "license": "MIT",
   "keywords": [
     "mask",
-    "react-mask",
-    "react-native-mask",
-    "vue-mask",
-    "typescript-mask",
-    "javascript-mask",
+    "money-mask",
+    "js-mask",
+    "ts-mask",
+    "form-mask",
+    "text-input-mask",
+    "react",
+    "react-native",
+    "nextjs",
+    "next",
+    "vue",
+    "angular",
     "typescript",
-    "javascript"
+    "javascript",
+    "ionic"
   ],
   "scripts": {
     "dev": "vite",
