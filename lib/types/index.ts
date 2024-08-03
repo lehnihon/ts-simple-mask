@@ -1,5 +1,5 @@
 export interface TsMaskOptions {
-  rulesMask?: Map<string, MaskOptions>;
+  rulesMask?: MaskRules;
   rulesMoney?: MaskMoneyRules;
 }
 
@@ -7,10 +7,20 @@ export interface MaskMoneyRules {
   thousands: string;
   decimal: string;
   precision: number;
+  beforeMask?: (value: number) => number;
+  afterMask?: (value: string) => string;
+}
+
+export interface MaskRules {
+  map: Map<string, MaskOptions>;
+  beforeMask?: (value: string) => string;
+  afterMask?: (value: string) => string;
 }
 
 export interface MaskOptions {
   pattern: RegExp;
-  transform?: (char: string) => string;
-  validate?: (value: string) => boolean;
+  transform?: (
+    prevValue: string,
+    newChar: string
+  ) => { prevValue: string; newChar: string };
 }

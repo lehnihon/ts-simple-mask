@@ -1,25 +1,11 @@
+import { MaskOptions } from "ts-simple-mask";
 import createTsMask from ".";
 import { MaskType } from "../enums";
-import { MaskOptions } from "../types";
 
 describe("Mask Utils", () => {
   test("default", () => {
     const TsMask = createTsMask();
     const value = "ABC12345678";
-    const maskedPlate = "ABC-1234";
-    const unmaskedPlate = "ABC1234";
-
-    expect(
-      TsMask.mask(value, TsMask.getMask(value, MaskType.LICENSE_PLATE_BR))
-    ).toStrictEqual({
-      masked: maskedPlate,
-      unmasked: unmaskedPlate,
-    });
-  });
-
-  test("formated", () => {
-    const TsMask = createTsMask();
-    const value = "abc-1234";
     const maskedPlate = "ABC-1234";
     const unmaskedPlate = "ABC1234";
 
@@ -45,24 +31,35 @@ describe("Mask Utils", () => {
     });
   });
 
-  test("validate", () => {
-    const rulesMask = new Map<string, MaskOptions>([
-      [
-        "9",
-        {
-          pattern: /\d/,
-          validate: (value) => Number(value) < 1000,
-        },
-      ],
-    ]);
+  test("before mask", () => {
     const TsMask = createTsMask({
-      rulesMask,
+      rulesMask: {
+        map: new Map<string, MaskOptions>([["#", { pattern: /[A-Za-z]/ }]]),
+        beforeMask: (value) => value + "g",
+      },
     });
-    const value = "1000";
-    const maskedPlate = "100";
-    const unmaskedPlate = "100";
+    const value = "abcdef";
+    const maskedPlate = "abc-defg";
+    const unmaskedPlate = "abcdefg";
 
-    expect(TsMask.mask(value, "9999")).toStrictEqual({
+    expect(TsMask.mask(value, "###-####")).toStrictEqual({
+      masked: maskedPlate,
+      unmasked: unmaskedPlate,
+    });
+  });
+
+  test("after mask", () => {
+    const TsMask = createTsMask({
+      rulesMask: {
+        map: new Map<string, MaskOptions>([["#", { pattern: /[A-Za-z]/ }]]),
+        afterMask: (value) => value + "g",
+      },
+    });
+    const value = "abcdef";
+    const maskedPlate = "abc-defg";
+    const unmaskedPlate = "abcdefg";
+
+    expect(TsMask.mask(value, "###-###")).toStrictEqual({
       masked: maskedPlate,
       unmasked: unmaskedPlate,
     });
@@ -175,6 +172,44 @@ describe("Mask Money Utils", () => {
     const unmasked = "1234567.89";
 
     expect(TsMask.unmaskMoney(masked)).toBe(unmasked);
+  });
+
+  test("money before", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        beforeMask: (value) => value + 5,
+      },
+    });
+    const value = "123456";
+    const masked = "1.239,56";
+    const unmasked = "1239.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("money after", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        afterMask: (value) => "R$" + value,
+      },
+    });
+    const value = "123456";
+    const masked = "R$1.234,56";
+    const unmasked = "1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
   });
 
   test("money integer", () => {
