@@ -2,14 +2,17 @@ import { DEFAULT_MONEY_RULES } from "../constants";
 
 import { MaskMoneyRules, MaskOptions } from "../types";
 
-export const transformValidateMask = (
+export const transformMask = (
   value: string,
   acc: string,
   option: MaskOptions
-) =>
-  option?.validate !== undefined && option.validate(acc + value) === false
-    ? acc
-    : acc + (option?.transform !== undefined ? option.transform(value) : value);
+) => {
+  if (option?.transform) {
+    const { prevValue, newChar } = option.transform(acc, value);
+    return prevValue + newChar;
+  }
+  return acc + value;
+};
 
 export const regexMaskMoney = (precision: number, decimal: string) =>
   new RegExp(

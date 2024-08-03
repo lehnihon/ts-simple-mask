@@ -1,3 +1,4 @@
+</br>
 <p align="center">
   <img src="./logo.png" alt="tssimplemask" height="150" />
 </p>
@@ -147,21 +148,31 @@ const placeholder = TsMask.getPlaceholder("SSS-0A00");
 - Interfaces
 
 ```ts
-interface TsMaskOptions {
-  rulesMask?: Map<string, MaskOptions>;
+export interface TsMaskOptions {
+  rulesMask?: MaskRules;
   rulesMoney?: MaskMoneyRules;
 }
 
-interface MaskOptions {
-  pattern: RegExp;
-  transform?: (char: string) => string;
-  validate?: (value: string) => boolean;
-}
-
-interface MaskMoneyRules {
+export interface MaskMoneyRules {
   thousands: string;
   decimal: string;
   precision: number;
+  beforeMask?: (value: number) => number;
+  afterMask?: (value: string) => string;
+}
+
+export interface MaskRules {
+  map: Map<string, MaskOptions>;
+  beforeMask?: (value: string) => string;
+  afterMask?: (value: string) => string;
+}
+
+export interface MaskOptions {
+  pattern: RegExp;
+  transform?: (
+    prevValue: string,
+    newChar: string
+  ) => { prevValue: string; newChar: string };
 }
 ```
 
@@ -178,58 +189,59 @@ const DEFAULT_MONEY_RULES = {
   precision: 2,
 };
 
-const DEFAULT_RULES = new Map<string, MaskOptions>([
-  ["0", { pattern: /\d/ }],
-  ["A", { pattern: /[a-zA-Z0-9]/ }],
-  ["S", { pattern: /[A-Za-z]/ }],
-  [
-    "X",
-    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleUpperCase() },
-  ],
-  [
-    "x",
-    { pattern: /[A-Za-z]/, transform: (value) => value.toLocaleLowerCase() },
-  ],
-  [
-    "Z",
-    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleUpperCase() },
-  ],
-  [
-    "z",
-    { pattern: /[a-zA-Z0-9]/, transform: (value) => value.toLocaleLowerCase() },
-  ],
-]);
+const DEFAULT_MASK_RULES = {
+  map: new Map<string, MaskOptions>([
+    ["0", { pattern: /\d/ }],
+    ["A", { pattern: /[a-zA-Z0-9]/ }],
+    ["S", { pattern: /[A-Za-z]/ }],
+    [
+      "X",
+      {
+        pattern: /[A-Za-z]/,
+        transform: (prevValue, newChar) => ({
+          prevValue,
+          newChar: newChar.toLocaleUpperCase(),
+        }),
+      },
+    ],
+    [
+      "x",
+      {
+        pattern: /[A-Za-z]/,
+        transform: (prevValue, newChar) => ({
+          prevValue,
+          newChar: newChar.toLocaleLowerCase(),
+        }),
+      },
+    ],
+    [
+      "Z",
+      {
+        pattern: /[a-zA-Z0-9]/,
+        transform: (prevValue, newChar) => ({
+          prevValue,
+          newChar: newChar.toLocaleUpperCase(),
+        }),
+      },
+    ],
+    [
+      "z",
+      {
+        pattern: /[a-zA-Z0-9]/,
+        transform: (prevValue, newChar) => ({
+          prevValue,
+          newChar: newChar.toLocaleLowerCase(),
+        }),
+      },
+    ],
+  ]),
+};
 ```
 
 - Custom Rules
 
-To customize the mask, you need to send the rules via optional parameter.
-
 ```ts
 import createTsMask, { MaskOptions } from "ts-simple-mask";
-
-const rulesMask = new Map<string, MaskOptions>([
-  ["#", { pattern: /[A-Za-z]/ }],
-  ["9", { pattern: /\d/, validate: (value) => Number(value) < 1001 }],
-]);
-
-const TsMask = createTsMask({
-  rulesMask,
-});
-
-const { masked, unmasked } = TsMask.mask("1000", "9999");
-//return 1000
-//the validate method only allows numbers smaller than 1000
-
-const { masked, unmasked } = TsMask.mask("1001", "9999");
-//so this mask will return 100
-
-TsMask.setRuleMask(rulesMask);
-//change the mask rules
-```
-
-```ts
-import createTsMask from "ts-simple-mask";
 
 const rulesMoney = {
   thousands: " ",
@@ -237,17 +249,64 @@ const rulesMoney = {
   precision: 3,
 };
 
+const rulesMask = {
+  map: new Map<string, MaskOptions>([
+    [
+      "#",
+      {
+        pattern: /[A-Za-z]/,
+        transform: (prevValue, newChar) => ({
+          prevValue,
+          newChar: newChar.toLocaleUpperCase(),
+        }),
+      },
+    ],
+    ["9", { pattern: /\d/ }],
+  ]),
+};
+
 const TsMask = createTsMask({
+  rulesMask,
   rulesMoney,
 });
 
+const { masked, unmasked } = TsMask.mask("abcd", "####");
+//transform uppercase
+//return ABCD
+
 const { masked, unmasked } = TsMask.maskMoney("123456789");
+//return 123 456.89
 
+TsMask.setRuleMask(rulesMask);
 TsMask.setRuleMoney(rulesMoney);
-//change the money rules
+//change the mask rules
+```
 
-TsMask.getRules();
-//returns active rules
+- Before Mask, After Mask
+
+```ts
+import createTsMask, { MaskOptions } from "ts-simple-mask";
+
+const TsMask = createTsMask({
+  rulesMask: {
+    map: new Map<string, MaskOptions>([["#", { pattern: /[A-Za-z]/ }]]),
+    beforeMask: (value) => (value === "hello" ? "helloworld" : value),
+    afterMask: (value) => (value.length > 10 ? value.slice(0, -1) : value),
+  },
+  rulesMoney: {
+    thousands: ".",
+    decimal: ",",
+    precision: 2,
+    beforeMask: (value) => (value === 1000 ? 1001 : value),
+    afterMask: (value) => "$" + value,
+  },
+});
+
+const { masked } = TsMask.mask("hello", "###########");
+//return helloworld
+
+const { masked } = TsMask.maskMoney("1000");
+//return $1001
 ```
 
 ![divider](./divider.png)
