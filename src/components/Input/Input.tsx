@@ -1,11 +1,18 @@
 import React from "react";
-import createTsMask from "ts-simple-mask";
+import createTsMask, { MaskOptions } from "ts-simple-mask";
 
 const TsMask = createTsMask({
   rulesMoney: {
-    thousands: " ",
+    thousands: ".",
     decimal: ",",
     precision: 2,
+    beforeMask: (value) => (value === 1000 ? 1001 : value),
+    afterMask: (value) => "$" + value,
+  },
+  rulesMask: {
+    map: new Map<string, MaskOptions>([["#", { pattern: /[A-Za-z]/ }]]),
+    beforeMask: (value) => (value === "hello" ? "helloworld" : value),
+    afterMask: (value) => (value.length > 10 ? value.slice(0, -1) : value),
   },
 });
 
@@ -14,7 +21,7 @@ export const Input = () => {
   const placeholder = TsMask.getPlaceholder("99-99-9999");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { masked } = TsMask.maskMoney(e.target.value);
+    const { masked } = TsMask.mask(e.target.value, "###########");
     setValue(masked);
   };
 
