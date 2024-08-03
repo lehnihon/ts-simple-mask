@@ -1,3 +1,4 @@
+</br>
 <p align="center">
   <img src="./logo.png" alt="tssimplemask" height="150" />
 </p>
@@ -156,8 +157,8 @@ export interface MaskMoneyRules {
   thousands: string;
   decimal: string;
   precision: number;
-  beforeMaskMoney?: (value: number) => number;
-  afterMaskMoney?: (value: string) => string;
+  beforeMask?: (value: number) => number;
+  afterMask?: (value: string) => string;
 }
 
 export interface MaskRules {
@@ -239,8 +240,6 @@ const DEFAULT_MASK_RULES = {
 
 - Custom Rules
 
-To customize the mask, you need to send the rules via optional parameter.
-
 ```ts
 import createTsMask, { MaskOptions } from "ts-simple-mask";
 
@@ -272,6 +271,7 @@ const TsMask = createTsMask({
 });
 
 const { masked, unmasked } = TsMask.mask("abcd", "####");
+//transform uppercase
 //return ABCD
 
 const { masked, unmasked } = TsMask.maskMoney("123456789");
@@ -280,6 +280,33 @@ const { masked, unmasked } = TsMask.maskMoney("123456789");
 TsMask.setRuleMask(rulesMask);
 TsMask.setRuleMoney(rulesMoney);
 //change the mask rules
+```
+
+- Before Mask, After Mask
+
+```ts
+import createTsMask, { MaskOptions } from "ts-simple-mask";
+
+const TsMask = createTsMask({
+  rulesMask: {
+    map: new Map<string, MaskOptions>([["#", { pattern: /[A-Za-z]/ }]]),
+    beforeMask: (value) => (value === "hello" ? "helloworld" : value),
+    afterMask: (value) => (value.length > 10 ? value.slice(0, -1) : value),
+  },
+  rulesMoney: {
+    thousands: ".",
+    decimal: ",",
+    precision: 2,
+    beforeMask: (value) => (value === 1000 ? 1001 : value),
+    afterMask: (value) => "$" + value,
+  },
+});
+
+const { masked } = TsMask.mask("hello", "###########");
+//return helloworld
+
+const { masked } = TsMask.maskMoney("1000");
+//return $1001
 ```
 
 ![divider](./divider.png)

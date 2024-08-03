@@ -180,7 +180,7 @@ describe("Mask Money Utils", () => {
         thousands: ".",
         decimal: ",",
         precision: 2,
-        beforeMaskMoney: (value) => value + 5,
+        beforeMask: (value) => value + 5,
       },
     });
     const value = "123456";
@@ -199,7 +199,7 @@ describe("Mask Money Utils", () => {
         thousands: ".",
         decimal: ",",
         precision: 2,
-        afterMaskMoney: (value) => "R$" + value,
+        afterMask: (value) => "R$" + value,
       },
     });
     const value = "123456";

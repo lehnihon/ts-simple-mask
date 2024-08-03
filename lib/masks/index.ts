@@ -50,8 +50,8 @@ const unmask = (value: string, rules: MaskRules) => {
 
 const maskMoney = (value: string, rules: MaskMoneyRules) => {
   const clearValue = clearMoneyValue(value, rules.precision);
-  const beforeValue = rules.beforeMaskMoney
-    ? rules.beforeMaskMoney(clearValue)
+  const beforeValue = rules.beforeMask
+    ? rules.beforeMask(clearValue)
     : clearValue;
 
   const masked = beforeValue
@@ -62,9 +62,7 @@ const maskMoney = (value: string, rules: MaskMoneyRules) => {
       `$1${rules.thousands}`
     );
 
-  const afterValue = rules.afterMaskMoney
-    ? rules.afterMaskMoney(masked)
-    : masked;
+  const afterValue = rules.afterMask ? rules.afterMask(masked) : masked;
   return {
     masked: afterValue,
     unmasked: unmaskMoney(afterValue, rules),
