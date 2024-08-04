@@ -54,12 +54,13 @@ export const applyMask = (
 };
 
 export const applyMaskMoney = (value: string, rules: MaskMoneyRules) => {
+  const sign = allowNegativeRule(value, rules);
   const clearValue = clearMoneyValue(value, rules.precision);
   const beforeMask = rules.beforeMask
     ? rules.beforeMask(clearValue)
     : clearValue;
 
-  return `${rules.prefix || ""}${beforeMask
+  return `${sign}${rules.prefix || ""}${beforeMask
     .toFixed(rules.precision)
     .replace(".", rules.decimal)
     .replace(
@@ -89,10 +90,11 @@ export const regexMaskMoney = (precision: number, decimal: string) =>
   );
 
 export const splitIntegerDecimal = (value: string, rules: MaskMoneyRules) => {
+  const minusSign = allowNegativeRule(value, rules);
   const numberParts = value.split(rules.decimal);
   const decimalPart = onlyDigits(numberParts.pop());
   const integerPart = onlyDigits(numberParts.join(""));
-  return { decimalPart, integerPart };
+  return { integerPart: `${minusSign}${integerPart}`, decimalPart };
 };
 
 export const clearMoneyValue = (value: string, precision: number) =>

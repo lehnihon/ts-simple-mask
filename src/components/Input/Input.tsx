@@ -8,8 +8,7 @@ const TsMask = createTsMask({
     precision: 2,
     allowNegative: true,
     prefix: "",
-    suffix: "R$",
-    beforeMask: (value) => (value === 1000 ? 1001 : value),
+    suffix: "$",
   },
   rulesMask: {
     map: new Map<string, MaskOptions>([["#", { pattern: /[A-Za-z]/ }]]),

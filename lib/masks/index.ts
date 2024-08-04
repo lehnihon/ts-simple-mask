@@ -2,7 +2,6 @@ import { DEFAULT_MASK_RULES } from "../constants";
 import { MaskType } from "../enums";
 import { MaskMoneyRules, MaskRules, TsMaskOptions } from "../types";
 import {
-  allowNegativeRule,
   applyMask,
   applyMaskMoney,
   onlyDigits,
@@ -45,10 +44,10 @@ const maskMoney = (value: string, rules: MaskMoneyRules) => {
   const afterMask = rules.afterMask
     ? rules.afterMask(afterSuffix)
     : afterSuffix;
-  const minusSign = allowNegativeRule(value, rules);
+
   return {
-    masked: `${minusSign}${afterMask}`,
-    unmasked: `${minusSign}${unmaskMoney(afterMask, rules)}`,
+    masked: `${afterMask}`,
+    unmasked: `${unmaskMoney(afterMask, rules)}`,
   };
 };
 
