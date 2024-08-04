@@ -6,8 +6,9 @@ const TsMask = createTsMask({
     thousands: ".",
     decimal: ",",
     precision: 2,
-    beforeMask: (value) => (value === 1000 ? 1001 : value),
-    afterMask: (value) => "$" + value,
+    allowNegative: true,
+    prefix: "",
+    suffix: "$",
   },
   rulesMask: {
     map: new Map<string, MaskOptions>([["#", { pattern: /[A-Za-z]/ }]]),
@@ -18,10 +19,10 @@ const TsMask = createTsMask({
 
 export const Input = () => {
   const [value, setValue] = React.useState("");
-  const placeholder = TsMask.getPlaceholder("99-99-9999");
+  const placeholder = TsMask.getPlaceholder("##-##-####");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { masked } = TsMask.mask(e.target.value, "###########");
+    const { masked } = TsMask.maskMoney(e.target.value);
     setValue(masked);
   };
 
