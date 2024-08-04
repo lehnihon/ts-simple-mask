@@ -174,6 +174,200 @@ describe("Mask Money Utils", () => {
     expect(TsMask.unmaskMoney(masked)).toBe(unmasked);
   });
 
+  test("negative", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+      },
+    });
+    const value = "-123456";
+    const masked = "-1.234,56";
+    const unmasked = "-1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("negative to positive", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+      },
+    });
+    const value = "-123456-";
+    const masked = "1.234,56";
+    const unmasked = "1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("negative plus sign", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+      },
+    });
+    const value = "-123456+";
+    const masked = "1.234,56";
+    const unmasked = "1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("prefix", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+        prefix: "R$",
+      },
+    });
+    const value = "-123456";
+    const masked = "-R$1.234,56";
+    const unmasked = "-1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("prefix integer", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: " ",
+        decimal: ",",
+        precision: 0,
+        allowNegative: false,
+        prefix: "R$",
+      },
+    });
+    const value = "-123456";
+    const masked = "R$123 456";
+    const unmasked = "123456";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("suffix formated", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+        suffix: "$",
+      },
+    });
+    const value = "-123456$7";
+    const masked = "-12.345,67$";
+    const unmasked = "-12345.67";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("suffix integer", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 0,
+        suffix: "$",
+      },
+    });
+    const value = "123456";
+    const masked = "123.456$";
+    const unmasked = "123456";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("suffix decimal", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        suffix: "$",
+      },
+    });
+    const value = "1234.56";
+    const masked = "1.234,56$";
+    const unmasked = "1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("suffix delete negative", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+        suffix: "$",
+      },
+    });
+    const value = "-1.234,56";
+    const masked = "-123,45$";
+    const unmasked = "-123.45";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("suffix delete", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: " ",
+        decimal: ",",
+        precision: 0,
+        suffix: "$",
+      },
+    });
+    const value = "123 456";
+    const masked = "12 345$";
+    const unmasked = "12345";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
   test("money before", () => {
     const TsMask = createTsMask({
       rulesMoney: {

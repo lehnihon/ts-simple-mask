@@ -1,6 +1,6 @@
 {
   "name": "ts-simple-mask",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A simple and versatile way to make text input masks. Lightweight and dependency free.",
   "type": "module",
   "files": [
@@ -23,13 +23,20 @@
   "license": "MIT",
   "keywords": [
     "mask",
-    "react-mask",
-    "react-native-mask",
-    "vue-mask",
-    "typescript-mask",
-    "javascript-mask",
+    "money-mask",
+    "js-mask",
+    "ts-mask",
+    "form-mask",
+    "text-input-mask",
+    "react",
+    "react-native",
+    "nextjs",
+    "next",
+    "vue",
+    "angular",
     "typescript",
-    "javascript"
+    "javascript",
+    "ionic"
   ],
   "scripts": {
     "dev": "vite",
