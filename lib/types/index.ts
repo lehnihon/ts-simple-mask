@@ -7,6 +7,7 @@ export interface MaskMoneyRules {
   thousands: string;
   decimal: string;
   precision: number;
+  allowNegative?: boolean;
   beforeMask?: (value: number) => number;
   afterMask?: (value: string) => string;
 }

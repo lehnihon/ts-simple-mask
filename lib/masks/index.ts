@@ -2,6 +2,7 @@ import { DEFAULT_MASK_RULES } from "../constants";
 import { MaskType } from "../enums";
 import { MaskMoneyRules, MaskRules, TsMaskOptions } from "../types";
 import {
+  allowNegativeRule,
   clearMoneyValue,
   onlyDigits,
   regexMaskMoney,
@@ -53,14 +54,14 @@ const maskMoney = (value: string, rules: MaskMoneyRules) => {
   const beforeValue = rules.beforeMask
     ? rules.beforeMask(clearValue)
     : clearValue;
-
-  const masked = beforeValue
+  const minusSign = allowNegativeRule(value, rules);
+  const masked = `${minusSign}${beforeValue
     .toFixed(rules.precision)
     .replace(".", rules.decimal)
     .replace(
       regexMaskMoney(rules.precision, rules.decimal),
       `$1${rules.thousands}`
-    );
+    )}`;
 
   const afterValue = rules.afterMask ? rules.afterMask(masked) : masked;
   return {
@@ -109,7 +110,7 @@ const createTsMask = (props?: TsMaskOptions) => {
   };
 
   const setRuleMoney = (rules: MaskMoneyRules) => {
-    _rulesMoney = rules;
+    _rulesMoney = validateMoneyRules(rules);
   };
 
   const getRules = () => {

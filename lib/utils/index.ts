@@ -14,6 +14,13 @@ export const transformMask = (
   return acc + value;
 };
 
+export const allowNegativeRule = (value: string, rules: MaskMoneyRules) => {
+  if (!rules.allowNegative) return "";
+  return value.match(/-/g)?.length === 1 && value.match(/\+/g)?.length !== 1
+    ? "-"
+    : "";
+};
+
 export const regexMaskMoney = (precision: number, decimal: string) =>
   new RegExp(
     precision === 0
@@ -38,6 +45,7 @@ export const validateMoneyRules = (rules?: MaskMoneyRules) => {
     ...rules,
     precision: !rules.precision || rules.precision < 0 ? 0 : rules.precision,
     decimal: !rules.decimal ? "." : rules.decimal,
+    allowNegative: !rules?.allowNegative ? false : true,
   };
 };
 

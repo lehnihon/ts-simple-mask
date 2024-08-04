@@ -174,6 +174,63 @@ describe("Mask Money Utils", () => {
     expect(TsMask.unmaskMoney(masked)).toBe(unmasked);
   });
 
+  test("negative", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+      },
+    });
+    const value = "-123456";
+    const masked = "-1.234,56";
+    const unmasked = "1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("negative to positive", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+      },
+    });
+    const value = "-123456-";
+    const masked = "1.234,56";
+    const unmasked = "1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
+  test("negative plus sign", () => {
+    const TsMask = createTsMask({
+      rulesMoney: {
+        thousands: ".",
+        decimal: ",",
+        precision: 2,
+        allowNegative: true,
+      },
+    });
+    const value = "-123456+";
+    const masked = "1.234,56";
+    const unmasked = "1234.56";
+
+    expect(TsMask.maskMoney(value)).toStrictEqual({
+      masked,
+      unmasked,
+    });
+  });
+
   test("money before", () => {
     const TsMask = createTsMask({
       rulesMoney: {
