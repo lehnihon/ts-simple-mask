@@ -3,33 +3,22 @@ import { MaskType } from "../enums";
 import { MaskMoneyRules, MaskRules, TsMaskOptions } from "../types";
 import {
   allowNegativeRule,
-  clearMoneyValue,
-  filterSuffix,
+  applyMask,
+  applyMaskMoney,
   onlyDigits,
-  regexMaskMoney,
   removeSpecialChar,
   scapeRegex,
   splitIntegerDecimal,
-  transformMask,
+  suffixFix,
   validateMoneyRules,
 } from "../utils";
 
 const mask = (value: string, maskRule: string, rules: MaskRules) => {
-  let i = 0;
   const unmasked = unmask(value, rules);
   const beforeValue = rules.beforeMask ? rules.beforeMask(unmasked) : unmasked;
-
-  const masked = [...maskRule].reduce((acc, char) => {
-    const currentValue = beforeValue[i];
-    if (!currentValue) return acc;
-    const currentRule = rules.map.get(char);
-    if (!currentRule) return acc + char;
-    return currentRule.pattern.test(currentValue) && ++i
-      ? transformMask(currentValue, acc, currentRule)
-      : ((i = -1), acc);
-  }, "");
-
+  const masked = applyMask(beforeValue, maskRule, rules);
   const afterValue = rules.afterMask ? rules.afterMask(masked) : masked;
+
   return {
     masked: afterValue,
     unmasked: unmask(afterValue, rules),
@@ -51,26 +40,15 @@ const unmask = (value: string, rules: MaskRules) => {
 };
 
 const maskMoney = (value: string, rules: MaskMoneyRules) => {
+  const masked = applyMaskMoney(value, rules);
+  const afterSuffix = suffixFix(value, masked, rules);
+  const afterMask = rules.afterMask
+    ? rules.afterMask(afterSuffix)
+    : afterSuffix;
   const minusSign = allowNegativeRule(value, rules);
-  const prefix = rules?.prefix || "";
-  const clearValue = clearMoneyValue(value, rules.precision);
-  const afterSuffix = filterSuffix(value, rules);
-  const beforeValue = rules.beforeMask
-    ? rules.beforeMask(clearValue)
-    : clearValue;
-
-  const masked = `${minusSign}${prefix}${beforeValue
-    .toFixed(rules.precision)
-    .replace(".", rules.decimal)
-    .replace(
-      regexMaskMoney(rules.precision, rules.decimal),
-      `$1${rules.thousands}`
-    )}${rules.suffix || ""}`;
-
-  const afterValue = rules.afterMask ? rules.afterMask(masked) : masked;
   return {
-    masked: afterValue,
-    unmasked: `${minusSign}${unmaskMoney(afterValue, rules)}`,
+    masked: `${minusSign}${afterMask}`,
+    unmasked: `${minusSign}${unmaskMoney(afterMask, rules)}`,
   };
 };
 

@@ -1,6 +1,6 @@
 import { DEFAULT_MONEY_RULES } from "../constants";
 
-import { MaskMoneyRules, MaskOptions } from "../types";
+import { MaskMoneyRules, MaskOptions, MaskRules } from "../types";
 
 export const transformMask = (
   value: string,
@@ -21,10 +21,63 @@ export const allowNegativeRule = (value: string, rules: MaskMoneyRules) => {
     : "";
 };
 
-export const filterSuffix = (value: string, rules: MaskMoneyRules) => {
-  if (!rules.suffix || value.length === 1) return false;
+export const filterSuffix = (
+  value: string,
+  clearValue: number,
+  rules: MaskMoneyRules
+) => {
+  if (
+    rules.suffix &&
+    value ===
+      `${clearValue}${rules.suffix}`.replace(".", rules.decimal).slice(0, -1)
+  ) {
+    return clearMoneyValue(`${clearValue}`.slice(0, -1), rules.precision);
+  }
+  return clearValue;
+};
 
-  return value.slice(-rules.suffix.length) !== rules.suffix;
+export const applyMask = (
+  value: string,
+  maskRule: string,
+  rules: MaskRules
+) => {
+  let i = 0;
+  return [...maskRule].reduce((acc, char) => {
+    const currentValue = value[i];
+    if (!currentValue) return acc;
+    const currentRule = rules.map.get(char);
+    if (!currentRule) return acc + char;
+    return currentRule.pattern.test(currentValue) && ++i
+      ? transformMask(currentValue, acc, currentRule)
+      : ((i = -1), acc);
+  }, "");
+};
+
+export const applyMaskMoney = (value: string, rules: MaskMoneyRules) => {
+  const clearValue = clearMoneyValue(value, rules.precision);
+  const beforeMask = rules.beforeMask
+    ? rules.beforeMask(clearValue)
+    : clearValue;
+
+  return `${rules.prefix || ""}${beforeMask
+    .toFixed(rules.precision)
+    .replace(".", rules.decimal)
+    .replace(
+      regexMaskMoney(rules.precision, rules.decimal),
+      `$1${rules.thousands}`
+    )}${rules.suffix || ""}`;
+};
+
+export const suffixFix = (
+  value: string,
+  masked: string,
+  rules: MaskMoneyRules
+) => {
+  if (rules?.suffix && value === masked.slice(0, -1)) {
+    const valueDeleted = masked.replace(rules.suffix, "").slice(0, -1);
+    return applyMaskMoney(valueDeleted, rules);
+  }
+  return masked;
 };
 
 export const regexMaskMoney = (precision: number, decimal: string) =>
