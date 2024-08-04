@@ -7,6 +7,8 @@ const TsMask = createTsMask({
     decimal: ",",
     precision: 2,
     allowNegative: true,
+    prefix: "",
+    suffix: "R$",
     beforeMask: (value) => (value === 1000 ? 1001 : value),
   },
   rulesMask: {
@@ -19,6 +21,9 @@ const TsMask = createTsMask({
 export const Input = () => {
   const [value, setValue] = React.useState("");
   const placeholder = TsMask.getPlaceholder("99-99-9999");
+  //CASO A 1234R$5
+  //CASO C 12345
+  //CASO B 1234R
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { masked } = TsMask.maskMoney(e.target.value);

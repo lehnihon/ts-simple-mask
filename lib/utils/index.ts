@@ -21,6 +21,12 @@ export const allowNegativeRule = (value: string, rules: MaskMoneyRules) => {
     : "";
 };
 
+export const filterSuffix = (value: string, rules: MaskMoneyRules) => {
+  if (!rules.suffix || value.length === 1) return false;
+
+  return value.slice(-rules.suffix.length) !== rules.suffix;
+};
+
 export const regexMaskMoney = (precision: number, decimal: string) =>
   new RegExp(
     precision === 0

@@ -4,6 +4,7 @@ import { MaskMoneyRules, MaskRules, TsMaskOptions } from "../types";
 import {
   allowNegativeRule,
   clearMoneyValue,
+  filterSuffix,
   onlyDigits,
   regexMaskMoney,
   removeSpecialChar,
@@ -50,23 +51,26 @@ const unmask = (value: string, rules: MaskRules) => {
 };
 
 const maskMoney = (value: string, rules: MaskMoneyRules) => {
+  const minusSign = allowNegativeRule(value, rules);
+  const prefix = rules?.prefix || "";
   const clearValue = clearMoneyValue(value, rules.precision);
+  const afterSuffix = filterSuffix(value, rules);
   const beforeValue = rules.beforeMask
     ? rules.beforeMask(clearValue)
     : clearValue;
-  const minusSign = allowNegativeRule(value, rules);
-  const masked = `${minusSign}${beforeValue
+
+  const masked = `${minusSign}${prefix}${beforeValue
     .toFixed(rules.precision)
     .replace(".", rules.decimal)
     .replace(
       regexMaskMoney(rules.precision, rules.decimal),
       `$1${rules.thousands}`
-    )}`;
+    )}${rules.suffix || ""}`;
 
   const afterValue = rules.afterMask ? rules.afterMask(masked) : masked;
   return {
     masked: afterValue,
-    unmasked: unmaskMoney(afterValue, rules),
+    unmasked: `${minusSign}${unmaskMoney(afterValue, rules)}`,
   };
 };
 
