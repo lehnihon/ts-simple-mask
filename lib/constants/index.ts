@@ -4,6 +4,7 @@ export const DEFAULT_MONEY_RULES = {
   thousands: ".",
   decimal: ",",
   precision: 2,
+  allowNegative: false,
 };
 
 export const DEFAULT_MASK_RULES = {

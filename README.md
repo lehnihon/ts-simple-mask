@@ -157,6 +157,9 @@ export interface MaskMoneyRules {
   thousands: string;
   decimal: string;
   precision: number;
+  prefix?: string;
+  suffix?: string;
+  allowNegative?: boolean;
   beforeMask?: (value: number) => number;
   afterMask?: (value: string) => string;
 }
@@ -247,6 +250,7 @@ const rulesMoney = {
   thousands: " ",
   decimal: ".",
   precision: 3,
+  prefix: "R$",
 };
 
 const rulesMask = {
@@ -275,7 +279,7 @@ const { masked, unmasked } = TsMask.mask("abcd", "####");
 //return ABCD
 
 const { masked, unmasked } = TsMask.maskMoney("123456789");
-//return 123 456.89
+//return R$123 456.89
 
 TsMask.setRuleMask(rulesMask);
 TsMask.setRuleMoney(rulesMoney);
