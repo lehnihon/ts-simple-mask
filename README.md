@@ -148,29 +148,28 @@ const placeholder = TsMask.getPlaceholder("SSS-0A00");
 - Interfaces
 
 ```ts
-export interface TsMaskOptions {
+interface TsMaskOptions {
   rulesMask?: MaskRules;
   rulesMoney?: MaskMoneyRules;
 }
 
-export interface MaskMoneyRules {
+interface MaskMoneyRules {
   thousands: string;
   decimal: string;
   precision: number;
   prefix?: string;
-  suffix?: string;
   allowNegative?: boolean;
   beforeMask?: (value: number) => number;
   afterMask?: (value: string) => string;
 }
 
-export interface MaskRules {
+interface MaskRules {
   map: Map<string, MaskOptions>;
   beforeMask?: (value: string) => string;
   afterMask?: (value: string) => string;
 }
 
-export interface MaskOptions {
+interface MaskOptions {
   pattern: RegExp;
   transform?: (
     prevValue: string,

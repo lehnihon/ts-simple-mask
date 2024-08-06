@@ -2,19 +2,19 @@ import { DEFAULT_MASK_RULES } from "../constants";
 import { MaskType } from "../enums";
 import { MaskMoneyRules, MaskRules, TsMaskOptions } from "../types";
 import {
+  allowNegativeRule,
   applyMask,
   applyMaskMoney,
+  clearMoneyValue,
   onlyDigits,
   removeSpecialChar,
   scapeRegex,
   splitIntegerDecimal,
-  suffixFix,
   validateMoneyRules,
 } from "../utils";
 
 const mask = (value: string, maskRule: string, rules: MaskRules) => {
-  const unmasked = unmask(value, rules);
-  const beforeValue = rules.beforeMask ? rules.beforeMask(unmasked) : unmasked;
+  const beforeValue = rules.beforeMask ? rules.beforeMask(value) : value;
   const masked = applyMask(beforeValue, maskRule, rules);
   const afterValue = rules.afterMask ? rules.afterMask(masked) : masked;
 
@@ -39,11 +39,13 @@ const unmask = (value: string, rules: MaskRules) => {
 };
 
 const maskMoney = (value: string, rules: MaskMoneyRules) => {
-  const masked = applyMaskMoney(value, rules);
-  const afterSuffix = suffixFix(value, masked, rules);
-  const afterMask = rules.afterMask
-    ? rules.afterMask(afterSuffix)
-    : afterSuffix;
+  const sign = allowNegativeRule(value, rules);
+  const clearValue = clearMoneyValue(value, rules.precision);
+  const beforeMask = rules.beforeMask
+    ? rules.beforeMask(clearValue)
+    : clearValue;
+  const masked = applyMaskMoney(beforeMask, sign, rules);
+  const afterMask = rules.afterMask ? rules.afterMask(masked) : masked;
 
   return {
     masked: `${afterMask}`,
